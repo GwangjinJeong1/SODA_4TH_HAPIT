@@ -12,7 +12,7 @@ class AppColors {
   static const Color bodyText2 = Color(0xff999F9B);
   static const Color textDisable = Color(0xffE0E2DF);
   static const Color textReversed = Color(0xffFDFDFD);
-  //with Friend
+  //With Friend
   static const Color friendOff = Color(0xffC7F1D9);
   static const Color friendOn = Color(0xff7EE4A7);
   static const Color friendPlus = Color(0xff85E8AD);

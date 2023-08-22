@@ -35,8 +35,9 @@ class AppTextStyle {
   static TextStyle? body3 = const TextStyle(
       fontFamily: 'SpoqaHanSansNeo-Medium',
       fontSize: 15,
-      fontWeight: FontWeight.w500,
-      color: Color(0xff0E0F0E));
+      fontWeight: FontWeight.bold,
+      color: Color(0xff0E0F0E),
+      height: 1.2);
   static TextStyle? sub1 = const TextStyle(
       fontFamily: 'SpoqaHanSansNeo-Medium',
       fontSize: 17,
@@ -46,7 +47,7 @@ class AppTextStyle {
       fontFamily: 'SpoqaHanSansNeo-Regular',
       fontSize: 15,
       fontWeight: FontWeight.w400,
-      color: Color(0xff0E0F0E));
+      color: Color(0xff404240));
   static TextStyle? sub3 = const TextStyle(
       fontFamily: 'SpoqaHanSansNeo-Medium',
       fontSize: 13,

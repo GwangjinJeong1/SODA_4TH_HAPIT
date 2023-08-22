@@ -2,7 +2,7 @@ import 'dart:ui';
 
 class AppColors {
   //Background Colors
-  static const Color backgroud1 = Color(0xffF9FAFA);
+  static const Color background1 = Color(0xffF9FAFA);
   static const Color background2 = Color(0xffF4F4F4);
   static const Color divider = Color(0xffD6DCDC);
   static const Color alarm = Color(0xff003339);
@@ -34,7 +34,7 @@ class AppColors {
   static const Color monthGreen5 = Color(0xff00A744);
   //Button Colors
   static const Color button1 = Color(0xffEDEDED);
-  static const Color button2 = Color(0xff00B0C7);
+  static const Color button2 = Color(0xff64D7FB);
   static const Color buttonStroke = Color(0xff0E0F0E);
   static const Color alert = Color(0xffE83E3E);
 }

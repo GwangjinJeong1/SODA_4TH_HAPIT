@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:soda_4th_hapit/components/textStyle.dart';
+import '../components/textStyle.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -190,9 +190,9 @@ class _HabitCardState extends State<HabitCard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(DateFormat('M월 d일', 'ko_KR').format(_selectedDay),
+                Text(DateFormat('M월 d일', 'ko_KR').format(widget.selectedDay),
                     style: AppTextStyle.sub1),
-                Text(DateFormat('EEEE', 'ko_KR').format(_selectedDay),
+                Text(DateFormat('EEEE', 'ko_KR').format(widget.selectedDay),
                     style: AppTextStyle.sub2),
               ],
             ),
@@ -204,14 +204,14 @@ class _HabitCardState extends State<HabitCard> {
                   stream: fireStore
                       .collection('habits')
                       .where("habitDate",
-                          isEqualTo:
-                              DateFormat('yyyy-MM-dd').format(_selectedDay))
+                          isEqualTo: DateFormat('yyyy-MM-dd')
+                              .format(widget.selectedDay))
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
                       return const SizedBox(
-                          width: 75,
-                          height: 75,
+                          width: 20,
+                          height: 20,
                           child: CircularProgressIndicator());
                     } else if (!snapshot.hasData ||
                         snapshot.data!.docs.isEmpty) {

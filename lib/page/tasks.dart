@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:soda_4th_hapit/page/month.dart';
+import './month.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -99,8 +99,8 @@ class _TasksState extends State<Tasks> {
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return const SizedBox(
-                      width: 75,
-                      height: 75,
+                      width: 50,
+                      height: 50,
                       child: CircularProgressIndicator());
                 } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                   return const Center(
@@ -356,8 +356,14 @@ class AddListButton extends StatelessWidget {
                     elevation: 7),
                 child: Row(
                   children: [
-                    SvgPicture.asset('public/images/friend_off.svg',
-                        width: 41, height: 36.5),
+                    ColorFiltered(
+                        colorFilter: const ColorFilter.mode(
+                          AppColors.buttonStroke,
+                          BlendMode.srcIn, // 색상을 이미지에 블렌드하는 방식
+                        ),
+                        child: SvgPicture.asset(
+                          'public/images/friend_off.svg', // 사용하려는 SVG 이미지의 경로로 변경
+                        )),
                     const SizedBox(width: 8),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -437,7 +443,6 @@ class _CompletionRateState extends State<CompletionRate> {
               Padding(
                 padding: const EdgeInsets.only(left: 4, top: 4, bottom: 4),
                 child: SizedBox(
-                  width: 139,
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
@@ -446,6 +451,7 @@ class _CompletionRateState extends State<CompletionRate> {
                               builder: (context) => const MonthPage()));
                     },
                     style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.fromLTRB(15, 10, 5, 10),
                         backgroundColor: AppColors.button1,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(19)),
@@ -454,7 +460,7 @@ class _CompletionRateState extends State<CompletionRate> {
                       Text('월별 보기', style: AppTextStyle.body2),
                       //const SizedBox(width: 2),
                       const Icon(Icons.keyboard_arrow_right_rounded,
-                          color: AppColors.bodyText1, size: 30),
+                          color: AppColors.bodyText1, size: 30)
                     ]),
                   ),
                 ),
@@ -478,13 +484,13 @@ class _CompletionRateState extends State<CompletionRate> {
                     lineHeight: 10,
                     backgroundColor: AppColors.background1,
                     progressColor: Colors.lightBlueAccent,
-                    width: 200,
+
                     // animation: true,
                     // animationDuration: 1000,
                   ),
                 ),
               ),
-              //const SizedBox(width: 5),
+              const SizedBox(width: 15),
               Text('${widget.ratio * 100}%', style: AppTextStyle.head2)
             ],
           ),

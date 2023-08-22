@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:soda_4th_hapit/components/colors.dart';
-import '../crud/add_habit.dart';
+
 import 'tasks.dart';
 import '../components/textStyle.dart';
 
@@ -64,88 +64,10 @@ class _HomeScreenState extends State<HomeScreen> {
               activeIcon: SvgPicture.asset('public/images/profile_on.svg'),
               label: ''),
         ],
+        fixedColor: AppColors.buttonStroke,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
-    );
-  }
-}
-
-class AddListButton extends StatelessWidget {
-  const AddListButton({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(
-          width: 158,
-          height: 70,
-          child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.only(
-                      left: 9, top: 15, right: 24, bottom: 20),
-                  backgroundColor: AppColors.friendPlus,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  elevation: 7),
-              child: Row(
-                children: [
-                  SvgPicture.asset('public/images/friend_off.svg',
-                      width: 41, height: 36.5),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('친구와 함께', style: AppTextStyle.sub1),
-                      Text('습관 만들기', style: AppTextStyle.sub3),
-                    ],
-                  ),
-                ],
-              )),
-        ),
-        const SizedBox(width: 11),
-        SizedBox(
-          width: 158,
-          height: 70,
-          child: Expanded(
-            child: ElevatedButton(
-                onPressed: () {
-                  Future.delayed(
-                    const Duration(seconds: 0),
-                    () => showModalBottomSheet(
-                      context: context,
-                      builder: (context) => const AddHabit(),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.only(
-                        left: 9, top: 15, right: 24, bottom: 20),
-                    backgroundColor: AppColors.alonePlus,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    elevation: 7),
-                child: Row(
-                  children: [
-                    Icon(Icons.add),
-                    const SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('나만의', style: AppTextStyle.sub1),
-                        Text('습관 만들기----------', style: AppTextStyle.sub3),
-                      ],
-                    ),
-                  ],
-                )),
-          ),
-        )
-      ],
     );
   }
 }

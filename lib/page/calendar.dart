@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:soda_4th_hapit/components/colors.dart';
+import '../components/colors.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 

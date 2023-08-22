@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_to_do/components/colors.dart';
+import 'package:soda_4th_habit/components/colors.dart';
 import '../crud/add_habit.dart';
 import 'tasks.dart';
 import '../components/textStyle.dart';

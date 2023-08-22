@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_to_do/firebase_options.dart';
+import 'package:soda_4th_habit/firebase_options.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'page/home.dart';
 

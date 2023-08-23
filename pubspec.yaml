@@ -73,7 +73,7 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
-    
+    - assets/fonts/
     - public/images/friend_off.svg
     - public/images/friend_on.svg
     - public/images/home_off.svg
@@ -108,6 +108,16 @@ flutter:
   #       - asset: fonts/TrajanPro.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
+  fonts: 
+    - family: SpoqaHanSansNeo-Bold
+      fonts:
+        - asset: assets/fonts/SpoqaHanSansNeo-Bold.ttf
+    - family: SpoqaHanSansNeo-Medium
+      fonts:
+        - asset: assets/fonts/SpoqaHanSansNeo-Medium.ttf
+    - family: SpoqaHanSansNeo-Regular
+      fonts:
+        - asset: assets/fonts/SpoqaHanSansNeo-Regular.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

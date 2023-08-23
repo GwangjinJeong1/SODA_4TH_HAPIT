@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../components/textStyle.dart';
@@ -106,7 +108,7 @@ class _MonthCalendarState extends State<MonthCalendar> {
         defaultBuilder: (context, day, focusedDay) {
           return Container(
               margin: EdgeInsets.zero,
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(7),
               width: 36,
               height: 36,
               decoration: BoxDecoration(
@@ -121,7 +123,7 @@ class _MonthCalendarState extends State<MonthCalendar> {
         selectedBuilder: (context, day, focusedDay) {
           return Container(
               margin: EdgeInsets.zero,
-              padding: const EdgeInsets.all(6),
+              padding: const EdgeInsets.all(5),
               width: 36,
               height: 36,
               decoration: BoxDecoration(
@@ -198,72 +200,108 @@ class _HabitCardState extends State<HabitCard> {
             ),
           ),
           Container(
-              padding: const EdgeInsets.only(left: 25, top: 10, bottom: 20),
-              width: 245,
-              child: StreamBuilder<QuerySnapshot>(
-                  stream: fireStore
-                      .collection('habits')
-                      .where("habitDate",
-                          isEqualTo: DateFormat('yyyy-MM-dd')
-                              .format(widget.selectedDay))
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator());
-                    } else if (!snapshot.hasData ||
-                        snapshot.data!.docs.isEmpty) {
-                      return const Center(
-                          child: Text(
-                        '아직 습관을 만들지 않았어요',
-                        style: TextStyle(
-                            fontFamily: 'SpoqaHanSansNeo-Medium',
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xff999F9B)),
-                        textAlign: TextAlign.center,
-                      ));
-                    } else {
-                      //List<DocumentSnapshot> documents = snapshot.data!.docs;
-                      //_calculateCompletionRate(documents);
-                      return ListView(
-                        children: snapshot.data!.docs
-                            .map((DocumentSnapshot document) {
-                          Map<String, dynamic> data =
-                              document.data()! as Map<String, dynamic>;
+            padding:
+                const EdgeInsets.only(left: 25, top: 10, bottom: 20, right: 15),
+            width: 245,
+            child: FutureBuilder<QuerySnapshot>(
+              future: fireStore
+                  .collection('habits')
+                  .where("habitDate",
+                      isEqualTo:
+                          DateFormat('yyyy-MM-dd').format(widget.selectedDay))
+                  .get(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      '아직 습관을 만들지 않았어요',
+                      style: TextStyle(
+                          fontFamily: 'SpoqaHanSansNeo-Medium',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xff999F9B)),
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                } else {
+                  final docs = snapshot.data!.docs;
 
-                          return SizedBox(
-                            width: 150,
-                            height: 25,
-                            child: Center(
-                              child: ListTile(
-                                leading: Checkbox(
-                                  value: data['isDone'],
-                                  onChanged: (value) {},
-                                  activeColor: AppColors.monthBlue4,
-                                  side: MaterialStateBorderSide.resolveWith(
-                                    (states) => BorderSide(
-                                        width: 1.0,
-                                        color: data['isDone']
-                                            ? Colors.transparent
-                                            : AppColors.buttonStroke),
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5)),
-                                ),
-                                title: Text(data['habitName'],
-                                    style: AppTextStyle.sub2),
-                                dense: true,
+                  return ListView.builder(
+                    itemCount: docs.length,
+                    itemBuilder: (context, index) {
+                      Map<String, dynamic> data =
+                          docs[index].data()! as Map<String, dynamic>;
+
+                      return SizedBox(
+                        width: 150,
+                        height: 25,
+                        child: Center(
+                          child: ListTile(
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 8),
+                            leading: Checkbox(
+                              value: data['isDone'],
+                              onChanged: (value) {},
+                              activeColor: AppColors.monthBlue4,
+                              side: MaterialStateBorderSide.resolveWith(
+                                (states) => BorderSide(
+                                    width: 1.0,
+                                    color: data['isDone']
+                                        ? Colors.transparent
+                                        : AppColors.buttonStroke),
                               ),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5)),
                             ),
-                          );
-                        }).toList(),
+                            horizontalTitleGap: 1,
+                            title: Padding(
+                              padding: const EdgeInsets.only(left: 0),
+                              child: Text(data['habitName'],
+                                  style: AppTextStyle.sub2),
+                            ),
+                            dense: true,
+                          ),
+                        ),
                       );
-                    }
-                  })),
+                    },
+                  );
+                }
+              },
+            ),
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class ScrollBlur extends StatelessWidget {
+  const ScrollBlur({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 247,
+      height: 41,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(9),
+        gradient: const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: [
+              0.0,
+              0.4792
+            ],
+            colors: [
+              Colors.transparent,
+              Color(0xFFF4F4F4),
+            ]),
       ),
     );
   }

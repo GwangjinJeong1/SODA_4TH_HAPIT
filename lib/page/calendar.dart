@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../components/colors.dart';
+import '../components/textStyle.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
@@ -36,13 +37,12 @@ class _CustomCalendarState extends State<CustomCalendar> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 buildWeekdayButtons(),
-
                 TableCalendar(
                   daysOfWeekHeight: 16,
-                  rowHeight: 25,
+                  rowHeight: 40,
                   locale: 'ko_KR',
-                  firstDay: DateTime.utc(2023, 7, 1),
-                  lastDay: DateTime.utc(2023, 10, 31),
+                  firstDay: DateTime.utc(2023, 1, 1),
+                  lastDay: DateTime.utc(2023, 12, 31),
                   focusedDay: _focusedDay,
                   calendarFormat: _calendarFormat,
                   headerVisible: false,
@@ -95,53 +95,65 @@ class _CustomCalendarState extends State<CustomCalendar> {
                         DateFormat.MMMM(locale).format(date),
                   ),
                   calendarStyle: const CalendarStyle(
-                      isTodayHighlighted: false,
-                      selectedDecoration:
-                          BoxDecoration(color: Color(0xff5C6BC0)), // 선택된 날짜 색깔
-                      outsideDaysVisible: true,
-                      // 다른 달의 날짜 보여주기
-                      outsideTextStyle: TextStyle(color: Color(0xffAEAEAE)),
-                      // 다른 달의 문자 스타일
-                      disabledTextStyle: TextStyle(color: Color(0xffBFBFBF)),
-                      // 포함되지 않는 날짜 문자 스타일
-                      defaultTextStyle: TextStyle(),
-                      // 기본 문자 스타일
-                      cellPadding: EdgeInsets.all(1),
-                      // 날짜 한칸 padding
-                      cellMargin: EdgeInsets.zero,
-                      todayTextStyle: TextStyle(color: Colors.white)),
+                    isTodayHighlighted: false,
+                    // 다른 달의 날짜 보여주기
+                    outsideDaysVisible: true,
+                    // 다른 달의 문자 스타일
+                    outsideTextStyle: TextStyle(
+                        fontFamily: 'SpoqaHanSansNeo-Medium',
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xffE0E2DF)),
+                    // 포함되지 않는 날짜 문자 스타일
+                    //disabledTextStyle: TextStyle(color: Color(0xffE0E2DF)),
+                    // 기본 문자 스타일
+                    //defaultTextStyle: TextStyle(),
+                    // 날짜 한칸 padding
+                    cellPadding: EdgeInsets.zero,
+                    cellMargin: EdgeInsets.zero,
+                    //todayTextStyle: TextStyle(color: Colors.white)),
+                  ),
                   calendarBuilders: CalendarBuilders(
                     defaultBuilder: (context, day, focusedDay) {
                       return Container(
                           margin: EdgeInsets.zero,
-                          width: 30,
-                          height: 30,
-                          color: Colors.amber,
+                          //padding: EdgeInsets.all(8),
+                          width: 40,
+                          height: 40,
+                          color: AppColors.background1,
+                          alignment: Alignment.center,
                           child: Center(
                               child: Text(day.day.toString(),
                                   style: TextStyle(
+                                      fontFamily: 'SpoqaHanSansNeo-Medium',
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500,
                                       color: day.isBefore(DateTime.now())
-                                          ? Colors.grey
-                                          : Colors.black))));
+                                          ? const Color(0xffE0E2DF)
+                                          : AppColors.mainText))));
                     },
                     selectedBuilder: (context, day, focusedDay) {
                       if (_selectedDays
                           .any((element) => isSameDay(day, element))) {
                         return Container(
                           decoration:
-                              const BoxDecoration(color: Colors.lightGreen),
+                              const BoxDecoration(color: AppColors.monthBlue2),
                           alignment: Alignment.center,
                           child: Text(day.day.toString(),
                               style: TextStyle(
+                                  fontFamily: 'SpoqaHanSansNeo-Medium',
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500,
                                   color: day.isBefore(DateTime.now())
-                                      ? Colors.grey
-                                      : Colors.black)),
+                                      ? const Color(0xffE0E2DF)
+                                      : AppColors.mainText)),
                         );
                       } else {
                         if (day.isBefore(DateTime.now())) {
                           return Center(
                             child: Text(day.day.toString(),
-                                style: const TextStyle(color: Colors.grey)),
+                                style:
+                                    const TextStyle(color: Color(0xffE0E2DF))),
                           );
                         } else {
                           return Center(child: Text(day.day.toString()));
@@ -151,7 +163,6 @@ class _CustomCalendarState extends State<CustomCalendar> {
                   ),
                 ),
                 selectAllButton(),
-                //buildWeekArrowButtons(),
               ],
             ),
           ),
@@ -263,22 +274,41 @@ class _CustomCalendarState extends State<CustomCalendar> {
 
   // 주차 선택 버튼
   Widget buildWeekArrowButtons() {
-    return Column(
-      children: [
-        const SizedBox(height: 80),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: List.generate(5, (int index) {
-            return IconButton(
-              onPressed: () {
-                selectDatesByWeek(index);
-              },
-              icon: const Icon(Icons.keyboard_arrow_right_rounded),
-            );
-          }),
-        ),
-      ],
+    return Container(
+      width: 35, // Set the width to determine the spacing from the left edge
+      height: 210,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: List.generate(5, (int index) {
+          return Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: 4.0,
+                  offset: const Offset(0, 1), // shadow direction: bottom right
+                ),
+              ],
+              color: AppColors.background1,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Center(
+              child: IconButton(
+                onPressed: () {
+                  selectDatesByWeek(index);
+                },
+                iconSize: 25,
+                padding: EdgeInsets.zero,
+                icon: const Icon(Icons.keyboard_arrow_right_rounded),
+                color: AppColors.buttonStroke,
+              ),
+            ),
+          );
+        }),
+      ),
     );
   }
 
@@ -304,9 +334,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
                 icon: const Icon(Icons.keyboard_arrow_left_rounded),
               ),
               const SizedBox(width: 5),
-              Text(month,
-                  style: const TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold)),
+              Text(month, style: AppTextStyle.head3),
               const SizedBox(width: 5),
               IconButton(
                 onPressed: () {
@@ -321,28 +349,48 @@ class _CustomCalendarState extends State<CustomCalendar> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.only(bottom: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: weekdays.asMap().entries.map((entry) {
               int index = entry.key;
               String day = entry.value;
-              return SizedBox(
+              bool isSelected = _selectedDays
+                  .any((selectedDay) => selectedDay.weekday == index);
+
+              return Container(
                 width: 30,
                 height: 30,
+                decoration: BoxDecoration(boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.15),
+                    blurRadius: 4.0,
+                    offset:
+                        const Offset(0, 1), // shadow direction: bottom right
+                  ),
+                ]),
                 child: ElevatedButton(
                   onPressed: () {
-                    selectDatesByWeekday(index);
+                    setState(() {
+                      if (isSelected) {
+                        _selectedDays.removeWhere(
+                            (selectedDay) => selectedDay.weekday == index);
+                      } else {
+                        selectDatesByWeekday(index);
+                      }
+                    });
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.background1,
-                    elevation: 2,
+                    backgroundColor: isSelected
+                        ? AppColors.monthBlue2 // Selected color
+                        : AppColors.background1,
+                    side: BorderSide(color: Colors.transparent),
+                    padding: EdgeInsets.zero, // Remove default padding
+                    alignment: Alignment.center, // Center align content
                   ),
-                  child: Center(
-                    child: Text(
-                      day,
-                      style: const TextStyle(color: Colors.black),
-                    ),
+                  child: Text(
+                    day,
+                    style: AppTextStyle.body3,
                   ),
                 ),
               );

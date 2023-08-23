@@ -88,7 +88,7 @@ class _TasksState extends State<Tasks> {
             },
           ),
           Container(
-            width: 375,
+            width: 380,
             height: 230,
             margin: const EdgeInsets.all(10.0),
             child: StreamBuilder<QuerySnapshot>(
@@ -116,82 +116,86 @@ class _TasksState extends State<Tasks> {
                 } else {
                   List<DocumentSnapshot> documents = snapshot.data!.docs;
                   _calculateCompletionRate(documents);
-                  return ListView(
-                    children:
-                        snapshot.data!.docs.map((DocumentSnapshot document) {
-                      Map<String, dynamic> data =
-                          document.data()! as Map<String, dynamic>;
+                  return ListView.builder(
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        //snapshot.data!.docs.map((DocumentSnapshot document) {
+                        DocumentSnapshot document = snapshot.data!.docs[index];
+                        Map<String, dynamic> data =
+                            document.data()! as Map<String, dynamic>;
 
-                      return Container(
-                        width: 335,
-                        height: 60,
-                        margin: const EdgeInsets.only(bottom: 10.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(36.0),
-                          color: data['isDone']
-                              ? AppColors.aloneOn
-                              : AppColors.aloneOff,
-                          boxShadow: [
-                            data['isDone']
-                                ? BoxShadow(
-                                    color: Colors.black.withOpacity(0.25),
-                                    blurRadius: 4.0,
-                                    offset: const Offset(
-                                        0, 4), // shadow direction: bottom right
-                                  )
-                                : BoxShadow(
-                                    color: Colors.black.withOpacity(0.15),
-                                    blurRadius: 4.0,
-                                    offset: const Offset(
-                                        0, 1), // shadow direction: bottom right
-                                  ),
-                          ],
-                        ),
-                        child: Center(
-                          child: ListTile(
-                            leading: Checkbox(
-                              value: data['isDone'],
-                              onChanged: (value) {
-                                data['isDone'] = value;
-
-                                isDone(document.id, value!);
-
-                                _updateCompletionRate();
-                              },
-                              activeColor: AppColors.monthBlue4,
-                              side: MaterialStateBorderSide.resolveWith(
-                                (states) => BorderSide(
-                                    width: 1.0,
-                                    color: data['isDone']
-                                        ? Colors.transparent
-                                        : AppColors.buttonStroke),
-                              ),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5)),
-                            ),
-                            title: Text(data['habitName'],
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w400,
-                                    color: data['isDone']
-                                        ? Colors.grey
-                                        : Colors.black)),
-                            onTap: () {
-                              Future.delayed(
-                                const Duration(seconds: 0),
-                                () => showModalBottomSheet(
-                                  context: context,
-                                  builder: (context) =>
-                                      UpdateHabit(habitData: data),
-                                ),
-                              );
-                            },
-                            dense: true,
+                        return Container(
+                          width: 335,
+                          height: 60,
+                          margin: const EdgeInsets.only(bottom: 10.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(36.0),
+                            color: data['isDone']
+                                ? AppColors.aloneOn
+                                : AppColors.aloneOff,
+                            boxShadow: [
+                              data['isDone']
+                                  ? BoxShadow(
+                                      color: Colors.black.withOpacity(0.25),
+                                      blurRadius: 4.0,
+                                      offset: const Offset(0,
+                                          4), // shadow direction: bottom right
+                                    )
+                                  : BoxShadow(
+                                      color: Colors.black.withOpacity(0.15),
+                                      blurRadius: 4.0,
+                                      offset: const Offset(0,
+                                          1), // shadow direction: bottom right
+                                    ),
+                            ],
                           ),
-                        ),
-                      );
-                    }).toList(),
-                  );
+                          child: Center(
+                            child: ListTile(
+                              leading: Checkbox(
+                                value: data['isDone'],
+                                onChanged: (value) {
+                                  setState(() {
+                                    data['isDone'] = value;
+                                  });
+
+                                  isDone(document.id, value!);
+
+                                  _updateCompletionRate();
+                                },
+                                activeColor: AppColors.monthBlue4,
+                                side: MaterialStateBorderSide.resolveWith(
+                                  (states) => BorderSide(
+                                      width: 1.0,
+                                      color: data['isDone']
+                                          ? Colors.transparent
+                                          : AppColors.buttonStroke),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5)),
+                              ),
+                              title: Text(data['habitName'],
+                                  style: TextStyle(
+                                      fontFamily: 'SpoqaHanSansNeo-Regular',
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w400,
+                                      color: data['isDone']
+                                          ? Colors.grey
+                                          : Colors.black)),
+                              onTap: () {
+                                Future.delayed(
+                                  const Duration(seconds: 0),
+                                  () => showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) =>
+                                        UpdateHabit(habitData: data),
+                                  ),
+                                );
+                              },
+                              dense: true,
+                            ),
+                          ),
+                        );
+                      });
                 }
               },
             ),
@@ -349,11 +353,11 @@ class AddListButton extends StatelessWidget {
             child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.fromLTRB(10, 17, 9, 17),
-                    backgroundColor: AppColors.friendPlus,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    elevation: 7),
+                  padding: const EdgeInsets.fromLTRB(10, 17, 9, 17),
+                  backgroundColor: AppColors.friendPlus,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
                 child: Row(
                   children: [
                     ColorFiltered(
@@ -370,7 +374,7 @@ class AddListButton extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('친구와 함께', style: AppTextStyle.sub1),
-                        Text('습관 만들기', style: AppTextStyle.sub3),
+                        Text('습관 만들기', style: AppTextStyle.sub4),
                       ],
                     ),
                   ],
@@ -406,7 +410,7 @@ class AddListButton extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('나만의', style: AppTextStyle.sub1),
-                        Text('습관 만들기', style: AppTextStyle.sub3),
+                        Text('습관 만들기', style: AppTextStyle.sub4),
                       ],
                     ),
                   ],
@@ -441,7 +445,7 @@ class _CompletionRateState extends State<CompletionRate> {
               Text('오늘의 달성률', style: AppTextStyle.head3),
               const Spacer(),
               Padding(
-                padding: const EdgeInsets.only(left: 4, top: 4, bottom: 4),
+                padding: const EdgeInsets.only(top: 4, bottom: 4),
                 child: SizedBox(
                   child: ElevatedButton(
                     onPressed: () {
@@ -473,20 +477,32 @@ class _CompletionRateState extends State<CompletionRate> {
                   fontSize: 18,
                   fontWeight: FontWeight.w400,
                   color: Color(0xff404240))),
+          const SizedBox(height: 22),
           Row(
             children: [
               Expanded(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(9),
-                  child: LinearPercentIndicator(
-                    padding: EdgeInsets.zero,
-                    percent: widget.ratio,
-                    lineHeight: 10,
-                    backgroundColor: AppColors.background1,
-                    progressColor: Colors.lightBlueAccent,
-
-                    // animation: true,
-                    // animationDuration: 1000,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(9),
+                      border:
+                          Border.all(color: AppColors.buttonStroke, width: 1.5),
+                    ),
+                    child: LinearPercentIndicator(
+                      padding: EdgeInsets.zero,
+                      percent: widget.ratio,
+                      lineHeight: 18,
+                      backgroundColor: AppColors.background1,
+                      barRadius: const Radius.circular(9),
+                      linearGradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            const Color(0xff78E1EF).withOpacity(0.4),
+                            const Color(0xff00E1FF).withOpacity(1)
+                          ]),
+                    ),
                   ),
                 ),
               ),

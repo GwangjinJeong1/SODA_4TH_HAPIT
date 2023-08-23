@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:soda_4th_hapit/components/textStyle.dart';
+import '../components/textStyle.dart';
 import 'dart:ui';
 import '../components/colors.dart';
 
@@ -121,8 +121,7 @@ class _TimePickerState extends State<TimePicker> {
               _hourController,
               (hour) {}),
           const SizedBox(width: 17),
-          const Text(':',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          Text(':', style: AppTextStyle.head1),
           const SizedBox(width: 7),
           buildCupertinoPicker(
               List.generate(60, (minute) => '$minute'.padLeft(2, '0')),

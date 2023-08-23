@@ -9,6 +9,7 @@ import '../components/textStyle.dart';
 import '../crud/add_habit.dart';
 import '../crud/update_habit.dart';
 import '../components/colors.dart';
+import './friend.dart';
 
 class Tasks extends StatefulWidget {
   const Tasks({super.key});
@@ -351,7 +352,13 @@ class AddListButton extends StatelessWidget {
             width: 160,
             height: 70,
             child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return WithFriend();
+                      });
+                },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.fromLTRB(10, 17, 9, 17),
                   backgroundColor: AppColors.friendPlus,

@@ -3,7 +3,6 @@ import '../components/colors.dart';
 import '../components/textStyle.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
-import '../crud/add_habit.dart';
 
 class CustomCalendar extends StatefulWidget {
   const CustomCalendar({super.key});
@@ -15,7 +14,6 @@ class CustomCalendar extends StatefulWidget {
 class _CustomCalendarState extends State<CustomCalendar> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
-  late final DateTime _selectedDay = DateTime.now();
   final List<DateTime> _selectedDays = [];
   final Set<int> _disabledMonths = {};
   bool _isSelectedAll = false;
@@ -25,12 +23,6 @@ class _CustomCalendarState extends State<CustomCalendar> {
     for (int i = 1; i <= 12; i++) {
       if (i != month) _disabledMonths.add(i);
     }
-  }
-
-  void _handleDateSelected(DateTime focusedDate) {
-    setState(() {
-      _focusedDay = focusedDate;
-    });
   }
 
   @override
@@ -435,7 +427,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
                     backgroundColor: isSelected
                         ? AppColors.monthBlue2 // Selected color
                         : AppColors.background1,
-                    side: BorderSide(color: Colors.transparent),
+                    side: const BorderSide(color: Colors.transparent),
                     padding: EdgeInsets.zero, // Remove default padding
                     alignment: Alignment.center, // Center align content
                   ),

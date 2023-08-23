@@ -14,17 +14,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 1;
+  final int _selectedIndex = 1;
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (_selectedIndex != index) {
+      Navigator.pushNamed(context, _routeNames[index]);
+    }
   }
 
-  final List<Widget> _widgetOptions = <Widget>[
-    const Center(child: Text('Friend')),
-    const Tasks(),
-    const Center(child: Text('Profile')),
+  final List<String> _routeNames = [
+    '/friend',
+    '/home',
+    '/profile',
   ];
 
   final fireStore = FirebaseFirestore.instance;
@@ -34,21 +34,23 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         toolbarHeight: 55,
         leading: Padding(
-          padding: const EdgeInsets.only(left: 20),
-          child: SvgPicture.asset('public/images/HAPIT_logo.svg',
-              width: 78, height: 18.5),
+          padding: const EdgeInsets.only(left: 20, top: 24, bottom: 12),
+          child: SvgPicture.asset('public/images/HAPIT_logo.svg'),
         ),
-        leadingWidth: 80,
+        leadingWidth: 100,
         centerTitle: true,
-        title: Text(
-          '홈',
-          style: AppTextStyle.bodyMedium,
+        title: Padding(
+          padding: const EdgeInsets.only(top: 21, bottom: 7),
+          child: Text(
+            '홈',
+            style: AppTextStyle.bodyMedium,
+          ),
         ),
-        elevation: 2,
         backgroundColor: AppColors.background1,
         shadowColor: Colors.black.withOpacity(0.2),
+        elevation: 10,
       ),
-      body: SafeArea(child: _widgetOptions.elementAt(_selectedIndex)),
+      body: const Tasks(),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(

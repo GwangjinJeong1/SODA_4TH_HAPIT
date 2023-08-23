@@ -90,7 +90,7 @@ class _TasksState extends State<Tasks> {
               Text('습관목록', style: AppTextStyle.head3),
             ],
           ),
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
           WeekCalendar(
             selectedDay: _selectedDay, // WeekCalendar에 selectedDay 추가
             onDaySelected: (selectedDay) {
@@ -101,7 +101,7 @@ class _TasksState extends State<Tasks> {
             },
           ),
           Container(
-            width: 380,
+            width: 390,
             height: 230,
             margin: const EdgeInsets.all(10.0),
             child: StreamBuilder<QuerySnapshot>(
@@ -111,7 +111,7 @@ class _TasksState extends State<Tasks> {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return Center(
+                  return const Center(
                       child: Text('데이터 불러오는 중...',
                           style: TextStyle(
                               fontFamily: 'SpoqaHanSansNeo-Medium',
@@ -155,14 +155,12 @@ class _TasksState extends State<Tasks> {
                                   ? BoxShadow(
                                       color: Colors.black.withOpacity(0.25),
                                       blurRadius: 4.0,
-                                      offset: const Offset(0,
-                                          4), // shadow direction: bottom right
+                                      offset: const Offset(0, 4),
                                     )
                                   : BoxShadow(
                                       color: Colors.black.withOpacity(0.15),
                                       blurRadius: 4.0,
-                                      offset: const Offset(0,
-                                          1), // shadow direction: bottom right
+                                      offset: const Offset(0, 1),
                                     ),
                             ],
                           ),
@@ -178,7 +176,6 @@ class _TasksState extends State<Tasks> {
                                   isDone(document.id, value!);
 
                                   _updateCompletionRate();
-                                  print(_completionRate);
                                 },
                                 activeColor: AppColors.monthBlue4,
                                 side: MaterialStateBorderSide.resolveWith(
@@ -252,7 +249,7 @@ class _WeekCalendarState extends State<WeekCalendar> {
       locale: 'ko_KR',
       headerVisible: false,
       daysOfWeekVisible: false,
-      rowHeight: 70,
+      rowHeight: 75,
       calendarFormat: CalendarFormat.week,
       focusedDay: _focusedDay,
       firstDay: DateTime.utc(2023, 7, 1),
@@ -277,7 +274,7 @@ class _WeekCalendarState extends State<WeekCalendar> {
 
           return Center(
             child: Container(
-              height: 60,
+              height: 65,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8.0),
                 color: AppColors.background1,
@@ -309,7 +306,8 @@ class _WeekCalendarState extends State<WeekCalendar> {
 
           return Center(
             child: Container(
-              height: 60,
+              width: 38,
+              height: 65,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
                   color: AppColors.background2,

@@ -4,6 +4,8 @@ import 'package:soda_4th_hapit/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'page/home.dart';
+import 'page/friendPage.dart';
+import 'page/profile.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +23,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
+        initialRoute: '/home',
+        routes: {
+          '/home': (context) => const HomeScreen(),
+          '/friend': (context) => const FriendPage(),
+          '/profile': (context) => const ProfilePage(),
+        },
         title: 'Flutter Demo',
         theme: ThemeData(),
         home: const AuthPage());

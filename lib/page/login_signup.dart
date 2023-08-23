@@ -238,7 +238,6 @@ class _SignUPState extends State<SignUP> {
       setState(() {
         isLoading = false;
       });
-      print(e);
     }
   }
 
@@ -373,7 +372,7 @@ class _SignUPState extends State<SignUP> {
 class HomePage extends StatelessWidget {
   final String nickname;
 
-  const HomePage({Key? key, required this.nickname});
+  const HomePage({super.key, required this.nickname});
 
   @override
   Widget build(BuildContext context) {

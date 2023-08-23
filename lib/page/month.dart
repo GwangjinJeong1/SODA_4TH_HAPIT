@@ -171,8 +171,6 @@ class HabitCard extends StatefulWidget {
 }
 
 class _HabitCardState extends State<HabitCard> {
-  late final DateTime _selectedDay;
-
   @override
   void initState() {
     super.initState();

@@ -1,26 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:math';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:soda_4th_hapit/page/friend.dart';
 
 //----------------------------초대 코드 입력 후 참가--------------------
 
 class CreatedRoomPage extends StatefulWidget {
   final int roomNumber;
 
-  CreatedRoomPage({required this.roomNumber});
+  const CreatedRoomPage({super.key, required this.roomNumber});
 
   @override
-  _CreatedRoomPageState createState() => _CreatedRoomPageState();
+  State<CreatedRoomPage> createState() => _CreatedRoomPageState();
 }
 
 class _CreatedRoomPageState extends State<CreatedRoomPage> {
   final TextEditingController _inputController = TextEditingController();
   bool _isValid = false;
-  final TextEditingController _nicknameController =
-      TextEditingController(); // 여기에 추가
 
   @override
   void initState() {
@@ -147,11 +142,12 @@ class RoomPage extends StatefulWidget {
   final String nickname; // Add this line to define the 'nickname' parameter
 
   const RoomPage(
-      {required this.roomNumber,
+      {super.key,
+      required this.roomNumber,
       required this.nickname}); // Add 'nickname' to the constructor
 
   @override
-  _RoomPageState createState() => _RoomPageState();
+  State<RoomPage> createState() => _RoomPageState();
 }
 
 class _RoomPageState extends State<RoomPage> {

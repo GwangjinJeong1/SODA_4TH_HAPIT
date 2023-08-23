@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:soda_4th_hapit/page/home.dart';
+import './home.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:soda_4th_hapit/main.dart';
+import '../main.dart';
 
 class LoginPage extends StatefulWidget {
   final void Function()? onPressed;
@@ -38,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
       // 로그인 성공 시에 SignPage로 이동
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -89,17 +88,17 @@ class _LoginPageState extends State<LoginPage> {
                     decoration: InputDecoration(
                       labelText: "이메일",
                       border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
+                        borderSide: const BorderSide(color: Colors.green),
                         borderRadius: BorderRadius.circular(26),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
+                        borderSide: const BorderSide(color: Colors.green),
                         borderRadius: BorderRadius.circular(26),
                       ),
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 SizedBox(
@@ -115,17 +114,17 @@ class _LoginPageState extends State<LoginPage> {
                     decoration: InputDecoration(
                       labelText: "비밀번호",
                       border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
+                        borderSide: const BorderSide(color: Colors.green),
                         borderRadius: BorderRadius.circular(26),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
+                        borderSide: const BorderSide(color: Colors.green),
                         borderRadius: BorderRadius.circular(26),
                       ),
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 SizedBox(
@@ -141,7 +140,8 @@ class _LoginPageState extends State<LoginPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        backgroundColor: Color.fromRGBO(100, 215, 251, 1)),
+                        backgroundColor:
+                            const Color.fromRGBO(100, 215, 251, 1)),
                     child: isLoading
                         ? const Center(
                             child: CircularProgressIndicator(
@@ -154,7 +154,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 SizedBox(
@@ -182,7 +182,6 @@ class _LoginPageState extends State<LoginPage> {
 //-----------------------회원가입
 class SignUP extends StatefulWidget {
   final void Function()? onPressed;
-  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
   final user = FirebaseAuth.instance.currentUser;
   SignUP({super.key, required this.onPressed});
 
@@ -397,9 +396,9 @@ class HomePage extends StatelessWidget {
                 ),
               ],
             ),
-            if (user != null) Text(""),
+            if (user != null) const Text(""),
             Text("$nickname님, 가입이 완료되었어요!"),
-            Text("해핏에 오신걸 환영해요 :->"), // 사용자의 닉네임 표시
+            const Text("해핏에 오신걸 환영해요 :->"), // 사용자의 닉네임 표시
             SizedBox(
               height: 42,
               width: 143,
@@ -407,7 +406,8 @@ class HomePage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => LoginAndSignUp()),
+                    MaterialPageRoute(
+                        builder: (context) => const LoginAndSignUp()),
                   );
                 },
                 child: const Text("로그인하러가기"),

@@ -60,6 +60,23 @@ class _TasksState extends State<Tasks> {
     setState(() {});
   }
 
+  int compareDocuments(DocumentSnapshot a, DocumentSnapshot b) {
+    bool isDoneA = a['isDone'];
+    bool isDoneB = b['isDone'];
+
+    // isDone 값 비교
+    if (isDoneA == isDoneB) {
+      // isDone 값이 같을 경우 순서 변경 없음
+      return 0;
+    } else if (isDoneA) {
+      // isDone=true 인 문서를 뒤로 이동
+      return 1;
+    } else {
+      // isDone=false 인 문서를 앞으로 이동
+      return -1;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -94,10 +111,13 @@ class _TasksState extends State<Tasks> {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return const SizedBox(
-                      width: 50,
-                      height: 50,
-                      child: CircularProgressIndicator());
+                  return Center(
+                      child: Text('데이터 불러오는 중...',
+                          style: TextStyle(
+                              fontFamily: 'SpoqaHanSansNeo-Medium',
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xff999F9B))));
                 } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                   return const Center(
                       child: Text(
@@ -111,11 +131,13 @@ class _TasksState extends State<Tasks> {
                   ));
                 } else {
                   List<DocumentSnapshot> documents = snapshot.data!.docs;
+                  documents.sort(compareDocuments);
+
                   _calculateCompletionRate(documents);
                   return ListView.builder(
-                      itemCount: snapshot.data!.docs.length,
+                      itemCount: documents.length,
                       itemBuilder: (context, index) {
-                        DocumentSnapshot document = snapshot.data!.docs[index];
+                        DocumentSnapshot document = documents[index];
                         Map<String, dynamic> data =
                             document.data()! as Map<String, dynamic>;
 

@@ -75,11 +75,63 @@ class MonthCalendar extends StatefulWidget {
 }
 
 class _MonthCalendarState extends State<MonthCalendar> {
+  final fireStore = FirebaseFirestore.instance;
+  int _totalDataCount = 0;
+  int _doneDataCount = 0;
+  double _completionRate = 0;
+
   @override
   void initState() {
     super.initState();
     _focusedDay = widget.selectedDay;
     _selectedDay = widget.selectedDay;
+  }
+
+  String formatDate(DateTime date) {
+    final formatter = DateFormat('yyyy-MM-dd');
+    return formatter.format(date);
+  }
+
+  Future<double> calculateCompletionRateForDay(DateTime selectedDate) async {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('habits')
+        .where('habitDate', isEqualTo: formatDate(selectedDate))
+        .get();
+
+    int totalDataCount = snapshot.docs.length;
+    int doneDataCount =
+        snapshot.docs.where((doc) => doc['isDone'] == true).length;
+
+    if (totalDataCount > 0) {
+      return doneDataCount / totalDataCount;
+    } else {
+      return 0.0;
+    }
+  }
+
+  final List<Color> completionColors = [
+    AppColors.monthBlue0, // 0%
+    AppColors.monthBlue1, // 1~20%
+    AppColors.monthBlue2, // ~40%
+    AppColors.monthBlue3, // ~60%
+    AppColors.monthBlue4, // ~80%
+    AppColors.monthBlue5 // ~100%
+  ];
+
+  Color getColor(double completionRate) {
+    if (completionRate <= 0.2) {
+      return completionColors[0];
+    } else if (completionRate <= 0.4) {
+      return completionColors[1];
+    } else if (completionRate <= 0.6) {
+      return completionColors[2];
+    } else if (completionRate <= 0.8) {
+      return completionColors[3];
+    } else if (completionRate < 1.0) {
+      return completionColors[4];
+    } else {
+      return completionColors[5];
+    }
   }
 
   @override
@@ -106,36 +158,121 @@ class _MonthCalendarState extends State<MonthCalendar> {
       ),
       calendarBuilders: CalendarBuilders(
         defaultBuilder: (context, day, focusedDay) {
-          return Container(
-              margin: EdgeInsets.zero,
-              padding: const EdgeInsets.all(7),
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: AppColors.button1),
-              child: Text(
-                day.day.toString(),
-                style: AppTextStyle.sub1,
-                textAlign: TextAlign.center,
-              ));
+          return FutureBuilder<double>(
+            future: calculateCompletionRateForDay(day),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                // 비동기 계산 중인 동안 표시할 위젯 반환
+                return Container(
+                  margin: EdgeInsets.zero,
+                  padding: const EdgeInsets.all(7),
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: AppColors.button1,
+                  ),
+                  child: Text(
+                    day.day.toString(),
+                    style: AppTextStyle.sub1,
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                // 에러 발생 시 표시할 위젯 반환
+                return Container(
+                  margin: EdgeInsets.zero,
+                  padding: const EdgeInsets.all(7),
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.red, // 에러 상황에 맞게 변경
+                  ),
+                  child: Center(
+                    child: Icon(Icons.error),
+                  ),
+                );
+              } else {
+                double completionRate = snapshot.data ?? 0.0;
+                Color cellColor = getColor(completionRate);
+                return Container(
+                  margin: EdgeInsets.zero,
+                  padding: const EdgeInsets.all(7),
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: cellColor,
+                  ),
+                  child: Text(
+                    day.day.toString(),
+                    style: AppTextStyle.sub1,
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              }
+            },
+          );
         },
         selectedBuilder: (context, day, focusedDay) {
-          return Container(
-              margin: EdgeInsets.zero,
-              padding: const EdgeInsets.all(5),
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: AppColors.button1,
-                border: Border.all(width: 2, color: AppColors.buttonStroke),
-              ),
-              child: Text(
-                day.day.toString(),
-                style: AppTextStyle.sub1,
-                textAlign: TextAlign.center,
-              ));
+          return FutureBuilder<double>(
+            future: calculateCompletionRateForDay(day),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                // 비동기 계산 중인 동안 표시할 위젯 반환
+                return Container(
+                  margin: EdgeInsets.zero,
+                  padding: const EdgeInsets.all(7),
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: AppColors.button1,
+                  ),
+                  child: Text(
+                    day.day.toString(),
+                    style: AppTextStyle.sub1,
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                // 에러 발생 시 표시할 위젯 반환
+                return Container(
+                  margin: EdgeInsets.zero,
+                  padding: const EdgeInsets.all(7),
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.red, // 에러 상황에 맞게 변경
+                  ),
+                  child: Center(
+                    child: Icon(Icons.error),
+                  ),
+                );
+              } else {
+                double completionRate = snapshot.data ?? 0.0;
+                Color cellColor = getColor(completionRate);
+                return Container(
+                  margin: EdgeInsets.zero,
+                  padding: const EdgeInsets.all(5),
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: cellColor,
+                    border: Border.all(width: 2, color: AppColors.buttonStroke),
+                  ),
+                  child: Text(
+                    day.day.toString(),
+                    style: AppTextStyle.sub1,
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              }
+            },
+          );
         },
         disabledBuilder: (context, day, focusedDay) {
           return Container(
@@ -177,6 +314,23 @@ class _HabitCardState extends State<HabitCard> {
     _selectedDay = widget.selectedDay;
   }
 
+  int compareDocuments(DocumentSnapshot a, DocumentSnapshot b) {
+    bool isDoneA = a['isDone'];
+    bool isDoneB = b['isDone'];
+
+    // isDone 값 비교
+    if (isDoneA == isDoneB) {
+      // isDone 값이 같을 경우 순서 변경 없음
+      return 0;
+    } else if (isDoneB) {
+      // isDone=false 인 문서를 뒤로 이동
+      return 1;
+    } else {
+      // isDone=true 인 문서를 앞으로 이동
+      return -1;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -210,11 +364,13 @@ class _HabitCardState extends State<HabitCard> {
                   .get(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(),
-                  );
+                  return const Center(
+                      child: Text('데이터 불러오는 중...',
+                          style: TextStyle(
+                              fontFamily: 'SpoqaHanSansNeo-Medium',
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xff999F9B))));
                 } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                   return const Center(
                     child: Text(
@@ -228,13 +384,14 @@ class _HabitCardState extends State<HabitCard> {
                     ),
                   );
                 } else {
-                  final docs = snapshot.data!.docs;
+                  final documents = snapshot.data!.docs;
+                  documents.sort(compareDocuments);
 
                   return ListView.builder(
-                    itemCount: docs.length,
+                    itemCount: documents.length,
                     itemBuilder: (context, index) {
                       Map<String, dynamic> data =
-                          docs[index].data()! as Map<String, dynamic>;
+                          documents[index].data()! as Map<String, dynamic>;
 
                       return SizedBox(
                         width: 150,

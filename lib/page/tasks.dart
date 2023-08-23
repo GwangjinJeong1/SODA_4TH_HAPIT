@@ -38,11 +38,6 @@ class _TasksState extends State<Tasks> {
         .update({'isDone': newValue});
   }
 
-  String formatDate(DateTime date) {
-    final formatter = DateFormat('yyyy-MM-dd');
-    return formatter.format(date);
-  }
-
   void _calculateCompletionRate(List<DocumentSnapshot> documents) {
     _totalDataCount = documents.length;
     _doneDataCount = documents.where((doc) => doc['isDone'] == true).length;
@@ -63,19 +58,6 @@ class _TasksState extends State<Tasks> {
     _calculateCompletionRate(documents);
 
     setState(() {});
-  }
-
-  // 달성률 계산 메서드
-  double _calculateCompletion(QuerySnapshot snapshot) {
-    int totalDataCount = snapshot.docs.length;
-    int doneDataCount =
-        snapshot.docs.where((doc) => doc['isDone'] == true).length;
-
-    if (totalDataCount > 0) {
-      return doneDataCount / totalDataCount;
-    } else {
-      return 0;
-    }
   }
 
   @override
@@ -133,7 +115,6 @@ class _TasksState extends State<Tasks> {
                   return ListView.builder(
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
-                        //snapshot.data!.docs.map((DocumentSnapshot document) {
                         DocumentSnapshot document = snapshot.data!.docs[index];
                         Map<String, dynamic> data =
                             document.data()! as Map<String, dynamic>;
@@ -175,6 +156,7 @@ class _TasksState extends State<Tasks> {
                                   isDone(document.id, value!);
 
                                   _updateCompletionRate();
+                                  print(_completionRate);
                                 },
                                 activeColor: AppColors.monthBlue4,
                                 side: MaterialStateBorderSide.resolveWith(
@@ -224,6 +206,13 @@ class _TasksState extends State<Tasks> {
   }
 }
 
+DateTime _focusedDay = DateTime.now();
+DateTime _selectedDay = DateTime.now();
+String formatDate(DateTime date) {
+  final formatter = DateFormat('yyyy-MM-dd');
+  return formatter.format(date);
+}
+
 class WeekCalendar extends StatefulWidget {
   final DateTime selectedDay;
   final ValueChanged<DateTime> onDaySelected;
@@ -234,15 +223,7 @@ class WeekCalendar extends StatefulWidget {
   State<WeekCalendar> createState() => _WeekCalendarState();
 }
 
-DateTime _focusedDay = DateTime.now();
-DateTime _selectedDay = DateTime.now();
-
 class _WeekCalendarState extends State<WeekCalendar> {
-  String formatDate(DateTime date) {
-    final formatter = DateFormat('yyyy-MM-dd');
-    return formatter.format(date);
-  }
-
   @override
   Widget build(BuildContext context) {
     return TableCalendar(
@@ -368,7 +349,7 @@ class AddListButton extends StatelessWidget {
                   showModalBottomSheet(
                       context: context,
                       builder: (BuildContext context) {
-                        return WithFriend();
+                        return const WithFriend();
                       });
                 },
                 style: ElevatedButton.styleFrom(
@@ -405,7 +386,7 @@ class AddListButton extends StatelessWidget {
             height: 70,
             child: ElevatedButton(
                 onPressed: () async {
-                  await Future.delayed(Duration(seconds: 0));
+                  await Future.delayed(const Duration(seconds: 0));
                   showModalBottomSheet(
                     context: context,
                     builder: (BuildContext context) {
@@ -481,7 +462,7 @@ class _CompletionRateState extends State<CompletionRate> {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.only(left: 15),
+                    padding: const EdgeInsets.only(left: 15),
                     backgroundColor: AppColors.button1,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(19),
@@ -493,7 +474,7 @@ class _CompletionRateState extends State<CompletionRate> {
                         MainAxisAlignment.center, // Center align the children
                     children: [
                       Text('월별 보기', style: AppTextStyle.body2),
-                      Icon(
+                      const Icon(
                         Icons.keyboard_arrow_right_rounded,
                         color: AppColors.bodyText1,
                         size: 30,
@@ -529,12 +510,13 @@ class _CompletionRateState extends State<CompletionRate> {
                       backgroundColor: AppColors.background1,
                       barRadius: const Radius.circular(9),
                       linearGradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            const Color(0xff78E1EF).withOpacity(0.4),
-                            const Color(0xff00E1FF).withOpacity(1)
-                          ]),
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          const Color(0xff78E1EF).withOpacity(0.4),
+                          const Color(0xff00E1FF).withOpacity(1)
+                        ],
+                      ),
                     ),
                   ),
                 ),

@@ -65,6 +65,19 @@ class _TasksState extends State<Tasks> {
     setState(() {});
   }
 
+  // 달성률 계산 메서드
+  double _calculateCompletion(QuerySnapshot snapshot) {
+    int totalDataCount = snapshot.docs.length;
+    int doneDataCount =
+        snapshot.docs.where((doc) => doc['isDone'] == true).length;
+
+    if (totalDataCount > 0) {
+      return doneDataCount / totalDataCount;
+    } else {
+      return 0;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -201,7 +214,7 @@ class _TasksState extends State<Tasks> {
               },
             ),
           ),
-          const AddListButton(),
+          AddListButton(updateCompletionRate: _updateCompletionRate),
           CompletionRate(
               date: DateFormat('M월 d일', 'ko_KR').format(_selectedDay),
               ratio: _completionRate)
@@ -337,9 +350,8 @@ class _WeekCalendarState extends State<WeekCalendar> {
 }
 
 class AddListButton extends StatelessWidget {
-  const AddListButton({
-    super.key,
-  });
+  final Function updateCompletionRate;
+  const AddListButton({super.key, required this.updateCompletionRate});
 
   @override
   Widget build(BuildContext context) {
@@ -360,7 +372,7 @@ class AddListButton extends StatelessWidget {
                       });
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.fromLTRB(10, 17, 9, 17),
+                  padding: const EdgeInsets.fromLTRB(10, 17, 9, 15),
                   backgroundColor: AppColors.friendPlus,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
@@ -392,17 +404,23 @@ class AddListButton extends StatelessWidget {
             width: 160,
             height: 70,
             child: ElevatedButton(
-                onPressed: () {
-                  Future.delayed(
-                    const Duration(seconds: 0),
-                    () => showModalBottomSheet(
-                      context: context,
-                      builder: (context) => const AddHabit(),
-                    ),
-                  );
+                onPressed: () async {
+                  await Future.delayed(Duration(seconds: 0));
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AddHabit(
+                        selectedDay: _selectedDay,
+                      );
+                    },
+                  ).then((value) {
+                    if (value != null) {
+                      updateCompletionRate();
+                    }
+                  });
                 },
                 style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.fromLTRB(19, 17, 34, 17),
+                    padding: const EdgeInsets.fromLTRB(19, 17, 34, 15),
                     backgroundColor: AppColors.alonePlus,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
@@ -451,28 +469,36 @@ class _CompletionRateState extends State<CompletionRate> {
             children: [
               Text('오늘의 달성률', style: AppTextStyle.head3),
               const Spacer(),
-              Padding(
-                padding: const EdgeInsets.only(top: 4, bottom: 4),
-                child: SizedBox(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const MonthPage()));
-                    },
-                    style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.fromLTRB(15, 10, 5, 10),
-                        backgroundColor: AppColors.button1,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(19)),
-                        elevation: 0),
-                    child: Row(children: [
+              SizedBox(
+                width: 125,
+                height: 35,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MonthPage()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.only(left: 15),
+                    backgroundColor: AppColors.button1,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(19),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.center, // Center align the children
+                    children: [
                       Text('월별 보기', style: AppTextStyle.body2),
-                      //const SizedBox(width: 2),
-                      const Icon(Icons.keyboard_arrow_right_rounded,
-                          color: AppColors.bodyText1, size: 30)
-                    ]),
+                      Icon(
+                        Icons.keyboard_arrow_right_rounded,
+                        color: AppColors.bodyText1,
+                        size: 30,
+                      )
+                    ],
                   ),
                 ),
               ),
@@ -514,7 +540,8 @@ class _CompletionRateState extends State<CompletionRate> {
                 ),
               ),
               const SizedBox(width: 15),
-              Text('${widget.ratio * 100}%', style: AppTextStyle.head2)
+              Text('${(widget.ratio * 100).toInt()}%',
+                  style: AppTextStyle.head2)
             ],
           ),
         ],

@@ -84,6 +84,8 @@ flutter:
     - public/images/logo.svg
     - public/images/alone.svg
     - public/images/HAPIT_logo.svg
+    - public/images/char.svg
+    - public/images/celeb.svg
     
 
   # An image asset can refer to one or more resolution-specific "variants", see

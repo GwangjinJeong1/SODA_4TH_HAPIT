@@ -9,6 +9,7 @@ import '../components/textStyle.dart';
 import '../crud/add_habit.dart';
 import '../crud/update_habit.dart';
 import '../components/colors.dart';
+import 'package:soda_4th_hapit/page/friend.dart';
 
 class Tasks extends StatefulWidget {
   const Tasks({super.key});

@@ -23,15 +23,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -60,9 +54,29 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAJiy47mraeJmYs99wd1_vz6VFEE3c7psU',
-    appId: '1:865467467489:android:05a80227155ea544c559a0',
+    appId: '1:865467467489:android:26667fcbb6cf2fdcc559a0',
     messagingSenderId: '865467467489',
     projectId: 'to-do-list-63627',
     storageBucket: 'to-do-list-63627.appspot.com',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyDeL09YDnpGpkmTelwl_8Cai7-eXZfSdoU',
+    appId: '1:865467467489:ios:0a945b603157b661c559a0',
+    messagingSenderId: '865467467489',
+    projectId: 'to-do-list-63627',
+    storageBucket: 'to-do-list-63627.appspot.com',
+    iosClientId: '865467467489-d6c5och61b3vn3jahln2vpf3e12tkpeu.apps.googleusercontent.com',
+    iosBundleId: 'com.example.soda4thHapit',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyDeL09YDnpGpkmTelwl_8Cai7-eXZfSdoU',
+    appId: '1:865467467489:ios:f6ea49ef8bc4cb05c559a0',
+    messagingSenderId: '865467467489',
+    projectId: 'to-do-list-63627',
+    storageBucket: 'to-do-list-63627.appspot.com',
+    iosClientId: '865467467489-7ja7lmostv6jei6r589rndlnbrr1vlg7.apps.googleusercontent.com',
+    iosBundleId: 'com.example.soda4thHapit.RunnerTests',
   );
 }

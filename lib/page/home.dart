@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:soda_4th_hapit/components/colors.dart';
-import '../crud/add_habit.dart';
+import '../components/colors.dart';
+
 import 'tasks.dart';
 import '../components/textStyle.dart';
 
@@ -64,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
               activeIcon: SvgPicture.asset('public/images/profile_on.svg'),
               label: ''),
         ],
+        fixedColor: AppColors.buttonStroke,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),

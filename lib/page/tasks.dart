@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:soda_4th_hapit/page/month.dart';
+import './month.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -89,7 +89,7 @@ class _TasksState extends State<Tasks> {
             },
           ),
           Container(
-            width: 375,
+            width: 380,
             height: 230,
             margin: const EdgeInsets.all(10.0),
             child: StreamBuilder<QuerySnapshot>(
@@ -100,8 +100,8 @@ class _TasksState extends State<Tasks> {
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return const SizedBox(
-                      width: 75,
-                      height: 75,
+                      width: 50,
+                      height: 50,
                       child: CircularProgressIndicator());
                 } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                   return const Center(
@@ -117,82 +117,86 @@ class _TasksState extends State<Tasks> {
                 } else {
                   List<DocumentSnapshot> documents = snapshot.data!.docs;
                   _calculateCompletionRate(documents);
-                  return ListView(
-                    children:
-                        snapshot.data!.docs.map((DocumentSnapshot document) {
-                      Map<String, dynamic> data =
-                          document.data()! as Map<String, dynamic>;
+                  return ListView.builder(
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        //snapshot.data!.docs.map((DocumentSnapshot document) {
+                        DocumentSnapshot document = snapshot.data!.docs[index];
+                        Map<String, dynamic> data =
+                            document.data()! as Map<String, dynamic>;
 
-                      return Container(
-                        width: 335,
-                        height: 60,
-                        margin: const EdgeInsets.only(bottom: 10.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(36.0),
-                          color: data['isDone']
-                              ? AppColors.aloneOn
-                              : AppColors.aloneOff,
-                          boxShadow: [
-                            data['isDone']
-                                ? BoxShadow(
-                                    color: Colors.black.withOpacity(0.25),
-                                    blurRadius: 4.0,
-                                    offset: const Offset(
-                                        0, 4), // shadow direction: bottom right
-                                  )
-                                : BoxShadow(
-                                    color: Colors.black.withOpacity(0.15),
-                                    blurRadius: 4.0,
-                                    offset: const Offset(
-                                        0, 1), // shadow direction: bottom right
-                                  ),
-                          ],
-                        ),
-                        child: Center(
-                          child: ListTile(
-                            leading: Checkbox(
-                              value: data['isDone'],
-                              onChanged: (value) {
-                                data['isDone'] = value;
-
-                                isDone(document.id, value!);
-
-                                _updateCompletionRate();
-                              },
-                              activeColor: AppColors.monthBlue4,
-                              side: MaterialStateBorderSide.resolveWith(
-                                (states) => BorderSide(
-                                    width: 1.0,
-                                    color: data['isDone']
-                                        ? Colors.transparent
-                                        : AppColors.buttonStroke),
-                              ),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5)),
-                            ),
-                            title: Text(data['habitName'],
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w400,
-                                    color: data['isDone']
-                                        ? Colors.grey
-                                        : Colors.black)),
-                            onTap: () {
-                              Future.delayed(
-                                const Duration(seconds: 0),
-                                () => showModalBottomSheet(
-                                  context: context,
-                                  builder: (context) =>
-                                      UpdateHabit(habitData: data),
-                                ),
-                              );
-                            },
-                            dense: true,
+                        return Container(
+                          width: 335,
+                          height: 60,
+                          margin: const EdgeInsets.only(bottom: 10.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(36.0),
+                            color: data['isDone']
+                                ? AppColors.aloneOn
+                                : AppColors.aloneOff,
+                            boxShadow: [
+                              data['isDone']
+                                  ? BoxShadow(
+                                      color: Colors.black.withOpacity(0.25),
+                                      blurRadius: 4.0,
+                                      offset: const Offset(0,
+                                          4), // shadow direction: bottom right
+                                    )
+                                  : BoxShadow(
+                                      color: Colors.black.withOpacity(0.15),
+                                      blurRadius: 4.0,
+                                      offset: const Offset(0,
+                                          1), // shadow direction: bottom right
+                                    ),
+                            ],
                           ),
-                        ),
-                      );
-                    }).toList(),
-                  );
+                          child: Center(
+                            child: ListTile(
+                              leading: Checkbox(
+                                value: data['isDone'],
+                                onChanged: (value) {
+                                  setState(() {
+                                    data['isDone'] = value;
+                                  });
+
+                                  isDone(document.id, value!);
+
+                                  _updateCompletionRate();
+                                },
+                                activeColor: AppColors.monthBlue4,
+                                side: MaterialStateBorderSide.resolveWith(
+                                  (states) => BorderSide(
+                                      width: 1.0,
+                                      color: data['isDone']
+                                          ? Colors.transparent
+                                          : AppColors.buttonStroke),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5)),
+                              ),
+                              title: Text(data['habitName'],
+                                  style: TextStyle(
+                                      fontFamily: 'SpoqaHanSansNeo-Regular',
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w400,
+                                      color: data['isDone']
+                                          ? Colors.grey
+                                          : Colors.black)),
+                              onTap: () {
+                                Future.delayed(
+                                  const Duration(seconds: 0),
+                                  () => showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) =>
+                                        UpdateHabit(habitData: data),
+                                  ),
+                                );
+                              },
+                              dense: true,
+                            ),
+                          ),
+                        );
+                      });
                 }
               },
             ),
@@ -350,22 +354,28 @@ class AddListButton extends StatelessWidget {
             child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.fromLTRB(10, 17, 9, 17),
-                    backgroundColor: AppColors.friendPlus,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    elevation: 7),
+                  padding: const EdgeInsets.fromLTRB(10, 17, 9, 17),
+                  backgroundColor: AppColors.friendPlus,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
                 child: Row(
                   children: [
-                    SvgPicture.asset('public/images/friend_off.svg',
-                        width: 41, height: 36.5),
+                    ColorFiltered(
+                        colorFilter: const ColorFilter.mode(
+                          AppColors.buttonStroke,
+                          BlendMode.srcIn, // 색상을 이미지에 블렌드하는 방식
+                        ),
+                        child: SvgPicture.asset(
+                          'public/images/friend_off.svg', // 사용하려는 SVG 이미지의 경로로 변경
+                        )),
                     const SizedBox(width: 8),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('친구와 함께', style: AppTextStyle.sub1),
-                        Text('습관 만들기', style: AppTextStyle.sub3),
+                        Text('습관 만들기', style: AppTextStyle.sub4),
                       ],
                     ),
                   ],
@@ -401,7 +411,7 @@ class AddListButton extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('나만의', style: AppTextStyle.sub1),
-                        Text('습관 만들기', style: AppTextStyle.sub3),
+                        Text('습관 만들기', style: AppTextStyle.sub4),
                       ],
                     ),
                   ],
@@ -436,9 +446,8 @@ class _CompletionRateState extends State<CompletionRate> {
               Text('오늘의 달성률', style: AppTextStyle.head3),
               const Spacer(),
               Padding(
-                padding: const EdgeInsets.only(left: 4, top: 4, bottom: 4),
+                padding: const EdgeInsets.only(top: 4, bottom: 4),
                 child: SizedBox(
-                  width: 139,
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
@@ -447,6 +456,7 @@ class _CompletionRateState extends State<CompletionRate> {
                               builder: (context) => const MonthPage()));
                     },
                     style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.fromLTRB(15, 10, 5, 10),
                         backgroundColor: AppColors.button1,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(19)),
@@ -455,7 +465,7 @@ class _CompletionRateState extends State<CompletionRate> {
                       Text('월별 보기', style: AppTextStyle.body2),
                       //const SizedBox(width: 2),
                       const Icon(Icons.keyboard_arrow_right_rounded,
-                          color: AppColors.bodyText1, size: 30),
+                          color: AppColors.bodyText1, size: 30)
                     ]),
                   ),
                 ),
@@ -468,24 +478,36 @@ class _CompletionRateState extends State<CompletionRate> {
                   fontSize: 18,
                   fontWeight: FontWeight.w400,
                   color: Color(0xff404240))),
+          const SizedBox(height: 22),
           Row(
             children: [
               Expanded(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(9),
-                  child: LinearPercentIndicator(
-                    padding: EdgeInsets.zero,
-                    percent: widget.ratio,
-                    lineHeight: 10,
-                    backgroundColor: AppColors.background1,
-                    progressColor: Colors.lightBlueAccent,
-                    width: 200,
-                    // animation: true,
-                    // animationDuration: 1000,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(9),
+                      border:
+                          Border.all(color: AppColors.buttonStroke, width: 1.5),
+                    ),
+                    child: LinearPercentIndicator(
+                      padding: EdgeInsets.zero,
+                      percent: widget.ratio,
+                      lineHeight: 18,
+                      backgroundColor: AppColors.background1,
+                      barRadius: const Radius.circular(9),
+                      linearGradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            const Color(0xff78E1EF).withOpacity(0.4),
+                            const Color(0xff00E1FF).withOpacity(1)
+                          ]),
+                    ),
                   ),
                 ),
               ),
-              //const SizedBox(width: 5),
+              const SizedBox(width: 15),
               Text('${widget.ratio * 100}%', style: AppTextStyle.head2)
             ],
           ),

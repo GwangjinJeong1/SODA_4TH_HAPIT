@@ -64,14 +64,10 @@ class _LoginAndSignUpState extends State<LoginAndSignUp> {
 
   @override
   Widget build(BuildContext context) {
-    if (islogin) {
-      return LoginPage(
-        onPressed: togglePage,
-      );
-    } else {
-      return SignUP(
-        onPressed: togglePage,
-      );
-    }
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Flutter Demo',
+      home: HomeScreen(),
+    );
   }
 }

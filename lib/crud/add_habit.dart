@@ -24,7 +24,7 @@ class _AddHabitState extends State<AddHabit> {
     var height = MediaQuery.of(context).size.height;
 
     return Container(
-      padding: const EdgeInsets.all(20), // 여백을 추가합니다.
+      padding: const EdgeInsets.all(16), // 여백을 추가합니다.
       height: height * 0.55, // 높이를 조절합니다.
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -34,26 +34,27 @@ class _AddHabitState extends State<AddHabit> {
             width: width * 0.58,
             child: TextFormField(
               controller: habitNameController,
-              decoration: const InputDecoration(
-                contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                hintText: '목록을 입력하세요.',
-                hintStyle: TextStyle(
-                    fontFamily: 'SpoqaHanSansNeo-Medium',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.bodyText2,
-                    height: 1.5),
+              style: AppTextStyle.body1,
+              cursorColor: AppColors.buttonStroke,
+              decoration: InputDecoration(
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                enabledBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.buttonStroke)),
+                focusedBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.buttonStroke)),
+                hintText: '목록을 입력하세요',
+                hintStyle: AppTextStyle.body1,
               ),
             ),
           ),
-          const SizedBox(height: 16),
           SizedBox(
             height: height * 0.35,
             width: width,
             child: Form(
               child: Column(
                 children: <Widget>[
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 30),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -90,7 +91,7 @@ class _AddHabitState extends State<AddHabit> {
                       )
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 10),
                   const Divider(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -128,9 +129,18 @@ class _AddHabitState extends State<AddHabit> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              SizedBox(
+              Container(
                 width: width * 0.27,
                 height: 30,
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      blurRadius: 4,
+                      offset: const Offset(0, 1),
+                    )
+                  ],
+                ),
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).pop();
@@ -142,9 +152,18 @@ class _AddHabitState extends State<AddHabit> {
                 ),
               ),
               const SizedBox(width: 10),
-              SizedBox(
+              Container(
                 width: width * 0.27,
                 height: 30,
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      blurRadius: 4,
+                      offset: const Offset(0, 1),
+                    )
+                  ],
+                ),
                 child: ElevatedButton(
                   onPressed: () async {
                     final habitName = habitNameController.text;

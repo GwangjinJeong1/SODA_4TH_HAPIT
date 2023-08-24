@@ -20,12 +20,18 @@ class RoomPage extends StatefulWidget {
 }
 
 class _RoomPageState extends State<RoomPage> {
-  int _selectedIndex = 0; // Set the index to the one that should be active
+  final int _selectedIndex = 0;
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (_selectedIndex != index) {
+      Navigator.pushNamed(context, _routeNames[index]);
+    }
   }
+
+  final List<String> _routeNames = [
+    '/friend',
+    '/home',
+    '/profile',
+  ];
 
   TextEditingController _motivationController = TextEditingController();
 
@@ -158,20 +164,33 @@ class _RoomPageState extends State<RoomPage> {
                 ),
                 const SizedBox(height: 30),
                 Padding(
-                  padding: const EdgeInsets.only(right: 200),
+                  padding: const EdgeInsets.only(right: 170),
                   child: Column(
                     children: participants.map((participant) {
                       return Column(
                         children: [
                           Padding(
-                            padding: const EdgeInsets.only(bottom: 72),
-                            child: Text(
-                              participant,
-                              style: const TextStyle(
-                                  color: Color.fromRGBO(14, 15, 14, 1),
-                                  fontFamily: 'SpoqaHanSansNeo-Regular',
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500),
+                            padding:
+                                const EdgeInsets.only(bottom: 30, left: 30),
+                            child: Row(
+                              children: [
+                                SvgPicture.asset('public/images/profile1.svg'),
+                                const SizedBox(width: 14), //거리 간격
+                                Column(
+                                  children: [
+                                    Text(
+                                      participant,
+                                      style: const TextStyle(
+                                          color: Color.fromRGBO(14, 15, 14, 1),
+                                          fontFamily: 'SpoqaHanSansNeo-Regular',
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    const SizedBox(height: 13),
+                                    Text("data")
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -277,11 +296,7 @@ class _RoomPageState extends State<RoomPage> {
           ),
         ],
         currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
+        onTap: _onItemTapped,
       ),
     );
   }

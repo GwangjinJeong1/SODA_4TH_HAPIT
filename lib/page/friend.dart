@@ -106,7 +106,7 @@ class _CreateRoomState extends State<CreateRoom> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(right: 250, top: 20, bottom: 30),
+              padding: const EdgeInsets.only(right: 250, top: 20, bottom: 20),
               child: SizedBox(
                 width: 220,
                 child: TextFormField(
@@ -431,6 +431,7 @@ class _JoinRoomPageState extends State<JoinRoomPage> {
   final TextEditingController _inputController = TextEditingController();
   bool _isValid = false;
   bool _isLoading = false;
+  List<int> _joinedRooms = []; // 이미 참여한 방 번호를 저장하는 리스트
 
   Future<void> _checkRoomAndJoin() async {
     setState(() {
@@ -439,6 +440,17 @@ class _JoinRoomPageState extends State<JoinRoomPage> {
 
     int enteredNumber = int.tryParse(_inputController.text) ?? -1;
 
+    if (_joinedRooms.contains(enteredNumber)) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('이미 참여한 방입니다.')),
+      );
+      return;
+    }
+
     DocumentSnapshot snapshot = await FirebaseFirestore.instance
         .collection('rooms')
         .doc(enteredNumber.toString())
@@ -446,11 +458,27 @@ class _JoinRoomPageState extends State<JoinRoomPage> {
 
     if (snapshot.exists && snapshot.data() != null) {
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+      List<dynamic> participants = data['participants'] ?? [];
+
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (participants.contains(user?.displayName)) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('이미 들어간 방입니다.')),
+        );
+        return;
+      }
+
       if (data['roomNumber'] == enteredNumber) {
         setState(() {
           _isValid = true;
           _isLoading = false;
         });
+
         // ignore: use_build_context_synchronously
         showDialog(
           context: context,

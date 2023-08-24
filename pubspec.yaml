@@ -86,6 +86,7 @@ flutter:
     - public/images/char.svg
     - public/images/celeb.svg
     - public/images/profile.svg
+    - public/images/profile1.svg
     - public/images/trashcan.svg
     - assets/fonts/
     

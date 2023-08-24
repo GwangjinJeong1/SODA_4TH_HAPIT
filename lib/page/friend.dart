@@ -486,7 +486,7 @@ class _JoinRoomPageState extends State<JoinRoomPage> {
   final TextEditingController _inputController = TextEditingController();
   bool _isValid = false;
   bool _isLoading = false;
-  List<int> _joinedRooms = []; // 이미 참여한 방 번호를 저장하는 리스트
+  final List<int> _joinedRooms = []; // 이미 참여한 방 번호를 저장하는 리스트
 
   Future<void> _checkRoomAndJoin() async {
     setState(() {

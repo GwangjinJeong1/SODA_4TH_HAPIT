@@ -5,6 +5,7 @@ import './month.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../components/textStyle.dart';
 import '../crud/add_habit.dart';
 import '../crud/update_habit.dart';
@@ -20,6 +21,7 @@ class Tasks extends StatefulWidget {
 
 class _TasksState extends State<Tasks> {
   final fireStore = FirebaseFirestore.instance;
+  final user = FirebaseAuth.instance.currentUser;
   DateTime _selectedDay = DateTime.now();
   int _totalDataCount = 0;
   int _doneDataCount = 0;
@@ -51,6 +53,7 @@ class _TasksState extends State<Tasks> {
   void _updateCompletionRate() async {
     List<DocumentSnapshot> documents = await fireStore
         .collection('habits')
+        .where('UID', isEqualTo: user?.uid)
         .where('habitDate', isEqualTo: formatDate(_selectedDay))
         .get()
         .then((snapshot) => snapshot.docs);
@@ -107,6 +110,7 @@ class _TasksState extends State<Tasks> {
             child: StreamBuilder<QuerySnapshot>(
               stream: fireStore
                   .collection('habits')
+                  .where("UID", isEqualTo: user?.uid)
                   .where("habitDate", isEqualTo: formatDate(_selectedDay))
                   .snapshots(),
               builder: (context, snapshot) {

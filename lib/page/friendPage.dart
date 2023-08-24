@@ -3,6 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../components/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../page/friend_part.dart';
+import '../components/textStyle.dart';
 
 class FriendPage extends StatefulWidget {
   const FriendPage({super.key});
@@ -58,8 +60,23 @@ class _FriendPageState extends State<FriendPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("$_currentUserNickname 님의 친구 페이지"),
-        backgroundColor: Colors.black,
+        toolbarHeight: 55,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20, top: 24, bottom: 12),
+          child: SvgPicture.asset('public/images/HAPIT_logo.svg'),
+        ),
+        leadingWidth: 100,
+        centerTitle: true,
+        title: Padding(
+          padding: const EdgeInsets.only(top: 21, bottom: 7),
+          child: Text(
+            '홈',
+            style: AppTextStyle.bodyMedium,
+          ),
+        ),
+        backgroundColor: AppColors.background1,
+        shadowColor: Colors.black.withOpacity(0.2),
+        elevation: 10,
       ),
       body: FutureBuilder<List<String>>(
         future: _getRoomsWithUser(_currentUserId),
@@ -74,29 +91,112 @@ class _FriendPageState extends State<FriendPage> {
 
           final List<String> roomsWithUser = snapshot.data ?? [];
 
-          return ListView.builder(
-            itemCount: roomsWithUser.length,
-            itemBuilder: (context, index) {
-              final roomNumber = roomsWithUser[index];
-              return FutureBuilder<DocumentSnapshot>(
-                future: _firestore.collection('rooms').doc(roomNumber).get(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
-                  }
+          return FutureBuilder<QuerySnapshot>(
+            future: _firestore.collection('rooms').get(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              }
 
-                  if (snapshot.hasError) {
-                    return const Text('Error');
-                  }
+              if (snapshot.hasError) {
+                return const Text('Error');
+              }
 
-                  final roomData =
-                      snapshot.data!.data() as Map<String, dynamic>;
+              final roomsSnapshot = snapshot.data;
+              final List<QueryDocumentSnapshot> roomDocs = roomsSnapshot!.docs;
+
+              final List<String> purposes = [];
+
+              for (final roomDoc in roomDocs) {
+                final roomData = roomDoc.data() as Map<String, dynamic>;
+                final participants = roomData['participants'] as List<dynamic>;
+
+                if (participants.contains(_currentUserNickname)) {
                   final purpose = roomData['purpose'] ?? 'No Purpose';
+                  purposes.add(purpose);
+                }
+              }
 
-                  return ListTile(
-                    title: Text('Room Purpose: $purpose'),
-                  );
-                },
+              return Column(
+                children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(right: 180, top: 27, bottom: 23),
+                    child: Text("함께 하는 습관목록", style: AppTextStyle.head3),
+                  ), // Display once above the list
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: purposes.length,
+                      itemBuilder: (context, index) {
+                        final purpose = purposes[index];
+                        final roomIndex = roomDocs.indexWhere((roomDoc) =>
+                            (roomDoc.data()
+                                as Map<String, dynamic>)['purpose'] ==
+                            purpose);
+
+                        if (roomIndex >= 0) {
+                          final participants = (roomDocs[roomIndex].data()
+                                  as Map<String, dynamic>)['participants']
+                              as List<dynamic>;
+
+                          // Exclude the current user's nickname from the participants list
+                          final filteredParticipants = participants
+                              .where((participant) =>
+                                  participant != _currentUserNickname)
+                              .toList();
+
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => RoomPage(
+                                    roomNumber: int.parse(roomDocs[roomIndex]
+                                        .id), // Convert to int
+                                    nickname: _currentUserNickname,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Column(
+                              children: [
+                                ListTile(
+                                  title: Container(
+                                    width: 335,
+                                    height: 60,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.friendOff,
+                                      borderRadius: BorderRadius.circular(36),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 38),
+                                          child: Text(purpose,
+                                              style: AppTextStyle.body2),
+                                        ),
+                                        Icon(Icons
+                                            .arrow_forward_ios), // Add an arrow icon
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                    'Participants: ${filteredParticipants.join(", ")}'),
+                                const Divider(),
+                              ],
+                            ),
+                          );
+                        } else {
+                          return ListTile(
+                            title: Text('Room Purpose: $purpose'),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ],
               );
             },
           );

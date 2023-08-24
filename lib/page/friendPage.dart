@@ -2,17 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../components/colors.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+class FriendPage extends StatefulWidget {
+  const FriendPage({super.key});
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<FriendPage> createState() => _FriendPageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
-  final int _selectedIndex = 2;
-  late String nickname = "";
-  late String email = "";
+class _FriendPageState extends State<FriendPage> {
+  final int _selectedIndex = 0;
   void _onItemTapped(int index) {
     if (_selectedIndex != index) {
       Navigator.pushNamed(context, _routeNames[index]);
@@ -27,21 +25,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              '프로필 정보',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            // Image.network(widget.user!.data()!['profile']),
-            Text('닉네임: $nickname'),
-            Text('이메일: $email'),
-          ],
-        ),
-      ),
+      body: const Center(child: Text('Friend Page')),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(

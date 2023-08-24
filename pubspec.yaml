@@ -73,7 +73,6 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
-    - assets/fonts/
     - public/images/friend_off.svg
     - public/images/friend_on.svg
     - public/images/home_off.svg
@@ -87,8 +86,8 @@ flutter:
     - public/images/char.svg
     - public/images/celeb.svg
     - public/images/profile.svg
-
-
+    - public/images/trashcan.svg
+    - assets/fonts/
     
     
 

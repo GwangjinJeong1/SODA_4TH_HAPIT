@@ -3,8 +3,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:soda_4th_hapit/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:soda_4th_hapit/page/home.dart';
 import 'package:soda_4th_hapit/page/login_signup.dart';
+import 'page/friendPage.dart';
+import 'page/profile.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,8 +22,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo', theme: ThemeData(), home: const AuthPage());
-    //homeScreen바꾸고 싶으면 AuthPage 쓰기
+        debugShowCheckedModeBanner: false,
+        initialRoute: '/home',
+        routes: {
+          '/home': (context) => const AuthPage(),
+          '/friend': (context) => const FriendPage(),
+          '/profile': (context) => const ProfilePage(),
+        },
+        title: 'Flutter Demo',
+        theme: ThemeData(),
+        home: const AuthPage());
   }
 }
 

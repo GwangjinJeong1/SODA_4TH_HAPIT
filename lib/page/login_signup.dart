@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:soda_4th_hapit/page/home.dart';
+import './home.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:soda_4th_hapit/main.dart';
+import '../main.dart';
 
 class LoginPage extends StatefulWidget {
   final void Function()? onPressed;
@@ -242,7 +241,6 @@ class _LoginPageState extends State<LoginPage> {
 //-----------------------회원가입
 class SignUP extends StatefulWidget {
   final void Function()? onPressed;
-  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
   final user = FirebaseAuth.instance.currentUser;
   SignUP({super.key, required this.onPressed});
 
@@ -302,7 +300,6 @@ class _SignUPState extends State<SignUP> {
       setState(() {
         isLoading = false;
       });
-      print(e);
     }
   }
 
@@ -485,7 +482,7 @@ class _SignUPState extends State<SignUP> {
 class HomePage extends StatelessWidget {
   final String nickname;
 
-  const HomePage({Key? key, required this.nickname});
+  const HomePage({super.key, required this.nickname});
 
   @override
   Widget build(BuildContext context) {

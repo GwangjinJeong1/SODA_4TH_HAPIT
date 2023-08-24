@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:soda_4th_hapit/page/calendar.dart';
 import 'package:intl/intl.dart';
 import '../components/colors.dart';
@@ -18,13 +19,10 @@ class UpdateHabit extends StatefulWidget {
 class _UpdateHabitState extends State<UpdateHabit> {
   final fireStore = FirebaseFirestore.instance;
   final TextEditingController habitNameController = TextEditingController();
-  final TextEditingController habitDescController = TextEditingController();
-  final String today = DateFormat('M월 d일 EEEE', 'ko_KR').format(DateTime.now());
+
+  DateTime today = DateTime.now();
   @override
   Widget build(BuildContext context) {
-    habitNameController.text = widget.habitData['habitName'];
-    habitDescController.text = widget.habitData['habitDate'];
-
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
     return Container(
@@ -40,36 +38,56 @@ class _UpdateHabitState extends State<UpdateHabit> {
                 width: width * 0.58,
                 child: TextFormField(
                   controller: habitNameController,
+                  style: AppTextStyle.body1,
+                  cursorColor: AppColors.buttonStroke,
                   decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                    enabledBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: AppColors.buttonStroke)),
+                    focusedBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: AppColors.buttonStroke)),
                     hintText: widget.habitData['habitName'],
-                    hintStyle: const TextStyle(
-                        fontFamily: 'SpoqaHanSansNeo-Medium',
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.bodyText2,
-                        height: 1.5),
+                    hintStyle: AppTextStyle.body1,
                   ),
                 ),
               ),
               const Spacer(),
-              IconButton(
-                onPressed: () async {
-                  await Future.delayed(
-                    const Duration(seconds: 0),
-                    () => showDialog(
-                      context: context,
-                      builder: (context) => DeleteHabit(
-                        habitId: widget.habitData['id'],
-                        habitName: widget.habitData['habitName'],
-                        habitDate: widget.habitData['habitDate'],
-                      ),
-                    ),
-                  );
-                  Navigator.of(context).pop();
-                },
-                icon: const Icon(Icons.delete),
-              ),
+              Padding(
+                  padding: const EdgeInsets.only(top: 15),
+                  child: PopupMenuButton<String>(
+                    icon: SvgPicture.asset('public/images/trashcan.svg'),
+                    itemBuilder: (BuildContext context) {
+                      return [
+                        PopupMenuItem<String>(
+                          value: '오늘',
+                          child: Text('오늘'),
+                        ),
+                        PopupMenuItem<String>(
+                          value: '이번 주',
+                          child: Text('이번 주'),
+                        ),
+                        PopupMenuItem<String>(
+                          value: '향후',
+                          child: Text('향후'),
+                        ),
+                      ];
+                    },
+                    onSelected: (String value) async {
+                      await Future.delayed(
+                        const Duration(seconds: 0),
+                        () => showDialog(
+                          context: context,
+                          builder: (context) => DeleteHabit(
+                            habitId: widget.habitData['id'],
+                            habitName: widget.habitData['habitName'],
+                            habitDate: widget.habitData['habitDate'],
+                          ),
+                        ),
+                      );
+                      Navigator.of(context).pop();
+                    },
+                  )),
             ],
           ),
           SizedBox(
@@ -78,7 +96,7 @@ class _UpdateHabitState extends State<UpdateHabit> {
             child: Form(
               child: Column(
                 children: <Widget>[
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 30),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -91,26 +109,31 @@ class _UpdateHabitState extends State<UpdateHabit> {
                         width: 150,
                         height: 26,
                         child: OutlinedButton(
-                          onPressed: () {
-                            Future.delayed(
-                              const Duration(seconds: 0),
-                              () => showModalBottomSheet(
-                                context: context,
-                                builder: (context) => const CustomCalendar(),
-                              ),
+                          onPressed: () async {
+                            final selectedDate = await showModalBottomSheet(
+                              context: context,
+                              builder: (context) => const CustomCalendar(),
                             );
+
+                            if (selectedDate != null) {
+                              setState(() {
+                                today = selectedDate;
+                              });
+                            }
                           }, // 탭 했을 때 캘린더로 선택되도록
                           style: OutlinedButton.styleFrom(
                               side: const BorderSide(
                                   width: 1, color: AppColors.buttonStroke),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15))),
-                          child: Text(today, style: AppTextStyle.body3),
+                          child: Text(
+                              DateFormat('M월 d일 EEEE', 'ko_KR').format(today),
+                              style: AppTextStyle.body3),
                         ),
                       )
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 10),
                   const Divider(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -151,9 +174,18 @@ class _UpdateHabitState extends State<UpdateHabit> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              SizedBox(
+              Container(
                 width: width * 0.27,
                 height: 30,
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      blurRadius: 4,
+                      offset: const Offset(0, 1),
+                    )
+                  ],
+                ),
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context, rootNavigator: true).pop();
@@ -165,16 +197,26 @@ class _UpdateHabitState extends State<UpdateHabit> {
                 ),
               ),
               const SizedBox(width: 10),
-              SizedBox(
+              Container(
                 width: width * 0.27,
                 height: 30,
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      blurRadius: 4,
+                      offset: const Offset(0, 1),
+                    )
+                  ],
+                ),
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     final habitName = habitNameController.text;
-                    final habitDate = habitDescController.text;
+                    final habitDate = DateFormat('yyyy-MM-dd').format(today);
 
-                    _updateTasks(habitName, habitDate);
-                    Navigator.of(context, rootNavigator: true).pop();
+                    await _updateHabits(habitName, habitDate);
+
+                    Navigator.of(context).pop();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.button2,
@@ -189,7 +231,7 @@ class _UpdateHabitState extends State<UpdateHabit> {
     );
   }
 
-  Future _updateTasks(String habitName, String habitDate) async {
+  Future _updateHabits(String habitName, String habitDate) async {
     var collection = FirebaseFirestore.instance.collection('habits');
     collection
         .doc(widget.habitData['id'])

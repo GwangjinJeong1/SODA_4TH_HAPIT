@@ -387,6 +387,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
               //const SizedBox(width: 5),
               Text(month, style: AppTextStyle.head3),
               //const SizedBox(width: 5),
+
               IconButton(
                 onPressed: () {
                   setState(() {
@@ -858,7 +859,7 @@ class _WithCalendarState extends State<WithCalendar> {
                     backgroundColor: isSelected
                         ? AppColors.monthBlue2 // Selected color
                         : AppColors.background1,
-                    side: BorderSide(color: Colors.transparent),
+                    side: const BorderSide(color: Colors.transparent),
                     padding: EdgeInsets.zero, // Remove default padding
                     alignment: Alignment.center, // Center align content
                   ),

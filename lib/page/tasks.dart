@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:soda_4th_hapit/page/month.dart';
+import './month.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -9,7 +9,7 @@ import '../components/textStyle.dart';
 import '../crud/add_habit.dart';
 import '../crud/update_habit.dart';
 import '../components/colors.dart';
-import 'package:soda_4th_hapit/page/friend.dart';
+import './friend.dart';
 
 class Tasks extends StatefulWidget {
   const Tasks({super.key});
@@ -38,11 +38,6 @@ class _TasksState extends State<Tasks> {
         .update({'isDone': newValue});
   }
 
-  String formatDate(DateTime date) {
-    final formatter = DateFormat('yyyy-MM-dd');
-    return formatter.format(date);
-  }
-
   void _calculateCompletionRate(List<DocumentSnapshot> documents) {
     _totalDataCount = documents.length;
     _doneDataCount = documents.where((doc) => doc['isDone'] == true).length;
@@ -65,6 +60,23 @@ class _TasksState extends State<Tasks> {
     setState(() {});
   }
 
+  int compareDocuments(DocumentSnapshot a, DocumentSnapshot b) {
+    bool isDoneA = a['isDone'];
+    bool isDoneB = b['isDone'];
+
+    // isDone 값 비교
+    if (isDoneA == isDoneB) {
+      // isDone 값이 같을 경우 순서 변경 없음
+      return 0;
+    } else if (isDoneA) {
+      // isDone=true 인 문서를 뒤로 이동
+      return 1;
+    } else {
+      // isDone=false 인 문서를 앞으로 이동
+      return -1;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -78,7 +90,7 @@ class _TasksState extends State<Tasks> {
               Text('습관목록', style: AppTextStyle.head3),
             ],
           ),
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
           WeekCalendar(
             selectedDay: _selectedDay, // WeekCalendar에 selectedDay 추가
             onDaySelected: (selectedDay) {
@@ -89,7 +101,7 @@ class _TasksState extends State<Tasks> {
             },
           ),
           Container(
-            width: 375,
+            width: 390,
             height: 230,
             margin: const EdgeInsets.all(10.0),
             child: StreamBuilder<QuerySnapshot>(
@@ -99,10 +111,13 @@ class _TasksState extends State<Tasks> {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return const SizedBox(
-                      width: 75,
-                      height: 75,
-                      child: CircularProgressIndicator());
+                  return const Center(
+                      child: Text('데이터 불러오는 중...',
+                          style: TextStyle(
+                              fontFamily: 'SpoqaHanSansNeo-Medium',
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xff999F9B))));
                 } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                   return const Center(
                       child: Text(
@@ -116,88 +131,91 @@ class _TasksState extends State<Tasks> {
                   ));
                 } else {
                   List<DocumentSnapshot> documents = snapshot.data!.docs;
+                  documents.sort(compareDocuments);
+
                   _calculateCompletionRate(documents);
-                  return ListView(
-                    children:
-                        snapshot.data!.docs.map((DocumentSnapshot document) {
-                      Map<String, dynamic> data =
-                          document.data()! as Map<String, dynamic>;
+                  return ListView.builder(
+                      itemCount: documents.length,
+                      itemBuilder: (context, index) {
+                        DocumentSnapshot document = documents[index];
+                        Map<String, dynamic> data =
+                            document.data()! as Map<String, dynamic>;
 
-                      return Container(
-                        width: 335,
-                        height: 60,
-                        margin: const EdgeInsets.only(bottom: 10.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(36.0),
-                          color: data['isDone']
-                              ? AppColors.aloneOn
-                              : AppColors.aloneOff,
-                          boxShadow: [
-                            data['isDone']
-                                ? BoxShadow(
-                                    color: Colors.black.withOpacity(0.25),
-                                    blurRadius: 4.0,
-                                    offset: const Offset(
-                                        0, 4), // shadow direction: bottom right
-                                  )
-                                : BoxShadow(
-                                    color: Colors.black.withOpacity(0.15),
-                                    blurRadius: 4.0,
-                                    offset: const Offset(
-                                        0, 1), // shadow direction: bottom right
-                                  ),
-                          ],
-                        ),
-                        child: Center(
-                          child: ListTile(
-                            leading: Checkbox(
-                              value: data['isDone'],
-                              onChanged: (value) {
-                                data['isDone'] = value;
-
-                                isDone(document.id, value!);
-
-                                _updateCompletionRate();
-                              },
-                              activeColor: AppColors.monthBlue4,
-                              side: MaterialStateBorderSide.resolveWith(
-                                (states) => BorderSide(
-                                    width: 1.0,
-                                    color: data['isDone']
-                                        ? Colors.transparent
-                                        : AppColors.buttonStroke),
-                              ),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5)),
-                            ),
-                            title: Text(data['habitName'],
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w400,
-                                    color: data['isDone']
-                                        ? Colors.grey
-                                        : Colors.black)),
-                            onTap: () {
-                              Future.delayed(
-                                const Duration(seconds: 0),
-                                () => showModalBottomSheet(
-                                  context: context,
-                                  builder: (context) =>
-                                      UpdateHabit(habitData: data),
-                                ),
-                              );
-                            },
-                            dense: true,
+                        return Container(
+                          width: 335,
+                          height: 60,
+                          margin: const EdgeInsets.only(bottom: 10.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(36.0),
+                            color: data['isDone']
+                                ? AppColors.aloneOn
+                                : AppColors.aloneOff,
+                            boxShadow: [
+                              data['isDone']
+                                  ? BoxShadow(
+                                      color: Colors.black.withOpacity(0.25),
+                                      blurRadius: 4.0,
+                                      offset: const Offset(0, 4),
+                                    )
+                                  : BoxShadow(
+                                      color: Colors.black.withOpacity(0.15),
+                                      blurRadius: 4.0,
+                                      offset: const Offset(0, 1),
+                                    ),
+                            ],
                           ),
-                        ),
-                      );
-                    }).toList(),
-                  );
+                          child: Center(
+                            child: ListTile(
+                              leading: Checkbox(
+                                value: data['isDone'],
+                                onChanged: (value) {
+                                  setState(() {
+                                    data['isDone'] = value;
+                                  });
+
+                                  isDone(document.id, value!);
+
+                                  _updateCompletionRate();
+                                },
+                                activeColor: AppColors.monthBlue4,
+                                side: MaterialStateBorderSide.resolveWith(
+                                  (states) => BorderSide(
+                                      width: 1.0,
+                                      color: data['isDone']
+                                          ? Colors.transparent
+                                          : AppColors.buttonStroke),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5)),
+                              ),
+                              title: Text(data['habitName'],
+                                  style: TextStyle(
+                                      fontFamily: 'SpoqaHanSansNeo-Regular',
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w400,
+                                      color: data['isDone']
+                                          ? Colors.grey
+                                          : Colors.black)),
+                              onTap: () {
+                                Future.delayed(
+                                  const Duration(seconds: 0),
+                                  () => showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) =>
+                                        UpdateHabit(habitData: data),
+                                  ),
+                                );
+                              },
+                              dense: true,
+                            ),
+                          ),
+                        );
+                      });
                 }
               },
             ),
           ),
-          const AddListButton(),
+          AddListButton(updateCompletionRate: _updateCompletionRate),
           CompletionRate(
               date: DateFormat('M월 d일', 'ko_KR').format(_selectedDay),
               ratio: _completionRate)
@@ -205,6 +223,13 @@ class _TasksState extends State<Tasks> {
       ),
     );
   }
+}
+
+DateTime _focusedDay = DateTime.now();
+DateTime _selectedDay = DateTime.now();
+String formatDate(DateTime date) {
+  final formatter = DateFormat('yyyy-MM-dd');
+  return formatter.format(date);
 }
 
 class WeekCalendar extends StatefulWidget {
@@ -217,22 +242,14 @@ class WeekCalendar extends StatefulWidget {
   State<WeekCalendar> createState() => _WeekCalendarState();
 }
 
-DateTime _focusedDay = DateTime.now();
-DateTime _selectedDay = DateTime.now();
-
 class _WeekCalendarState extends State<WeekCalendar> {
-  String formatDate(DateTime date) {
-    final formatter = DateFormat('yyyy-MM-dd');
-    return formatter.format(date);
-  }
-
   @override
   Widget build(BuildContext context) {
     return TableCalendar(
       locale: 'ko_KR',
       headerVisible: false,
       daysOfWeekVisible: false,
-      rowHeight: 70,
+      rowHeight: 75,
       calendarFormat: CalendarFormat.week,
       focusedDay: _focusedDay,
       firstDay: DateTime.utc(2023, 7, 1),
@@ -257,7 +274,7 @@ class _WeekCalendarState extends State<WeekCalendar> {
 
           return Center(
             child: Container(
-              height: 60,
+              height: 65,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8.0),
                 color: AppColors.background1,
@@ -289,7 +306,8 @@ class _WeekCalendarState extends State<WeekCalendar> {
 
           return Center(
             child: Container(
-              height: 60,
+              width: 38,
+              height: 65,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
                   color: AppColors.background2,
@@ -333,9 +351,8 @@ class _WeekCalendarState extends State<WeekCalendar> {
 }
 
 class AddListButton extends StatelessWidget {
-  const AddListButton({
-    super.key,
-  });
+  final Function updateCompletionRate;
+  const AddListButton({super.key, required this.updateCompletionRate});
 
   @override
   Widget build(BuildContext context) {
@@ -344,9 +361,21 @@ class AddListButton extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(
+          Container(
             width: 160,
             height: 70,
+            decoration: BoxDecoration(boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.20),
+                blurRadius: 6,
+                offset: Offset(0, 2),
+              ),
+              BoxShadow(
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 4,
+                offset: Offset(0, 1),
+              ),
+            ]),
             child: ElevatedButton(
                 onPressed: () {
                   showModalBottomSheet<void>(
@@ -361,47 +390,71 @@ class AddListButton extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.fromLTRB(10, 17, 9, 17),
-                    backgroundColor: AppColors.friendPlus,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    elevation: 7),
+                  padding: const EdgeInsets.fromLTRB(10, 17, 9, 15),
+                  backgroundColor: AppColors.friendPlus,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
                 child: Row(
                   children: [
-                    SvgPicture.asset('public/images/friend_off.svg',
-                        width: 41, height: 36.5),
+                    ColorFiltered(
+                        colorFilter: const ColorFilter.mode(
+                          AppColors.buttonStroke,
+                          BlendMode.srcIn, // 색상을 이미지에 블렌드하는 방식
+                        ),
+                        child: SvgPicture.asset(
+                          'public/images/friend_off.svg', // 사용하려는 SVG 이미지의 경로로 변경
+                        )),
                     const SizedBox(width: 8),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('친구와 함께', style: AppTextStyle.sub1),
-                        Text('습관 만들기', style: AppTextStyle.sub3),
+                        Text('습관 만들기', style: AppTextStyle.sub4),
                       ],
                     ),
                   ],
                 )),
           ),
           const SizedBox(width: 11),
-          SizedBox(
+          Container(
             width: 160,
             height: 70,
+            decoration: BoxDecoration(boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.20),
+                blurRadius: 6,
+                offset: Offset(0, 2),
+              ),
+              BoxShadow(
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 4,
+                offset: Offset(0, 1),
+              ),
+            ]),
             child: ElevatedButton(
-                onPressed: () {
-                  Future.delayed(
-                    const Duration(seconds: 0),
-                    () => showModalBottomSheet(
-                      context: context,
-                      builder: (context) => const AddHabit(),
-                    ),
-                  );
+                onPressed: () async {
+                  await Future.delayed(const Duration(seconds: 0));
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AddHabit(
+                        selectedDay: _selectedDay,
+                      );
+                    },
+                  ).then((value) {
+                    if (value != null) {
+                      updateCompletionRate();
+                    }
+                  });
                 },
                 style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.fromLTRB(19, 17, 34, 17),
-                    backgroundColor: AppColors.alonePlus,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    elevation: 7),
+                  padding: const EdgeInsets.fromLTRB(19, 17, 34, 15),
+                  backgroundColor: AppColors.alonePlus,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
                 child: Row(
                   children: [
                     SvgPicture.asset('public/images/alone.svg',
@@ -412,7 +465,7 @@ class AddListButton extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('나만의', style: AppTextStyle.sub1),
-                        Text('습관 만들기', style: AppTextStyle.sub3),
+                        Text('습관 만들기', style: AppTextStyle.sub4),
                       ],
                     ),
                   ],
@@ -446,28 +499,36 @@ class _CompletionRateState extends State<CompletionRate> {
             children: [
               Text('오늘의 달성률', style: AppTextStyle.head3),
               const Spacer(),
-              Padding(
-                padding: const EdgeInsets.only(left: 4, top: 4, bottom: 4),
-                child: SizedBox(
-                  width: 139,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const MonthPage()));
-                    },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.button1,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(19)),
-                        elevation: 0),
-                    child: Row(children: [
+              SizedBox(
+                width: 125,
+                height: 35,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MonthPage()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.only(left: 15),
+                    backgroundColor: AppColors.button1,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(19),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment:
+                        MainAxisAlignment.center, // Center align the children
+                    children: [
                       Text('월별 보기', style: AppTextStyle.body2),
-                      //const SizedBox(width: 2),
-                      const Icon(Icons.keyboard_arrow_right_rounded,
-                          color: AppColors.bodyText1, size: 30),
-                    ]),
+                      const Icon(
+                        Icons.keyboard_arrow_right_rounded,
+                        color: AppColors.bodyText1,
+                        size: 30,
+                      )
+                    ],
                   ),
                 ),
               ),
@@ -479,25 +540,39 @@ class _CompletionRateState extends State<CompletionRate> {
                   fontSize: 18,
                   fontWeight: FontWeight.w400,
                   color: Color(0xff404240))),
+          const SizedBox(height: 22),
           Row(
             children: [
               Expanded(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(9),
-                  child: LinearPercentIndicator(
-                    padding: EdgeInsets.zero,
-                    percent: widget.ratio,
-                    lineHeight: 10,
-                    backgroundColor: AppColors.background1,
-                    progressColor: Colors.lightBlueAccent,
-                    width: 200,
-                    // animation: true,
-                    // animationDuration: 1000,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(9),
+                      border:
+                          Border.all(color: AppColors.buttonStroke, width: 1.5),
+                    ),
+                    child: LinearPercentIndicator(
+                      padding: EdgeInsets.zero,
+                      percent: widget.ratio,
+                      lineHeight: 18,
+                      backgroundColor: AppColors.background1,
+                      barRadius: const Radius.circular(9),
+                      linearGradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          const Color(0xff78E1EF).withOpacity(0.4),
+                          const Color(0xff00E1FF).withOpacity(1)
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
-              //const SizedBox(width: 5),
-              Text('${widget.ratio * 100}%', style: AppTextStyle.head2)
+              const SizedBox(width: 15),
+              Text('${(widget.ratio * 100).toInt()}%',
+                  style: AppTextStyle.head2)
             ],
           ),
         ],

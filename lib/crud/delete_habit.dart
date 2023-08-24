@@ -46,7 +46,7 @@ class _DeleteHabitState extends State<DeleteHabit> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.button1,
             ),
-            child: Text('삭제하기', style: AppTextStyle.body3),
+            child: Text('취소하기', style: AppTextStyle.body3),
           ),
         ),
         SizedBox(
@@ -60,7 +60,7 @@ class _DeleteHabitState extends State<DeleteHabit> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.button2,
               ),
-              child: Text('취소하기', style: AppTextStyle.body3),
+              child: Text('삭제하기', style: AppTextStyle.body3),
             ))
       ],
     );
@@ -68,6 +68,6 @@ class _DeleteHabitState extends State<DeleteHabit> {
 
   Future _deleteHabits() async {
     var collection = FirebaseFirestore.instance.collection('habits');
-    collection.doc(widget.habitId).delete();
+    await collection.doc(widget.habitId).delete();
   }
 }

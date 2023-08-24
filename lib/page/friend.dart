@@ -7,6 +7,7 @@ import 'package:soda_4th_hapit/page/calendar.dart';
 import 'package:soda_4th_hapit/page/friend_part.dart';
 
 class WithFriend extends StatelessWidget {
+  const WithFriend({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,8 +84,10 @@ class WithFriend extends StatelessWidget {
 //---------------------------------- 친구와 함께 방 생성하는 곳----------------------------
 
 class CreateRoom extends StatefulWidget {
+  const CreateRoom({super.key});
+
   @override
-  _CreateRoomState createState() => _CreateRoomState();
+  State<CreateRoom> createState() => _CreateRoomState();
 }
 
 class _CreateRoomState extends State<CreateRoom> {
@@ -239,17 +242,15 @@ class _CreateRoomState extends State<CreateRoom> {
 class CreatedRoomPage extends StatefulWidget {
   final int roomNumber;
 
-  CreatedRoomPage({required this.roomNumber});
+  const CreatedRoomPage({super.key, required this.roomNumber});
 
   @override
-  _CreatedRoomPageState createState() => _CreatedRoomPageState();
+  State<CreatedRoomPage> createState() => _CreatedRoomPageState();
 }
 
 class _CreatedRoomPageState extends State<CreatedRoomPage> {
   final TextEditingController _inputController = TextEditingController();
   bool _isValid = false;
-  final TextEditingController _nicknameController =
-      TextEditingController(); // 여기에 추가
 
   @override
   void initState() {
@@ -413,19 +414,21 @@ class _CreatedRoomPageState extends State<CreatedRoomPage> {
 }
 
 void main() {
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     home: WithFriend(),
   ));
 }
 
 //---------------------------join
 class JoinRoomPage extends StatefulWidget {
+  const JoinRoomPage({super.key});
+
   @override
-  _JoinRoomPageState createState() => _JoinRoomPageState();
+  State<JoinRoomPage> createState() => _JoinRoomPageState();
 }
 
 class _JoinRoomPageState extends State<JoinRoomPage> {
-  TextEditingController _inputController = TextEditingController();
+  final TextEditingController _inputController = TextEditingController();
   bool _isValid = false;
   bool _isLoading = false;
 
@@ -597,17 +600,15 @@ class _JoinRoomPageState extends State<JoinRoomPage> {
 class ParticipateRoom extends StatefulWidget {
   final int roomNumber;
 
-  ParticipateRoom({required this.roomNumber});
+  const ParticipateRoom({super.key, required this.roomNumber});
 
   @override
-  _ParticipateRoom createState() => _ParticipateRoom();
+  State<ParticipateRoom> createState() => _ParticipateRoom();
 }
 
 class _ParticipateRoom extends State<ParticipateRoom> {
   final TextEditingController _inputController = TextEditingController();
   bool _isValid = false;
-  final TextEditingController _nicknameController =
-      TextEditingController(); // 여기에 추가
 
   @override
   void initState() {
@@ -730,16 +731,6 @@ class _ParticipateRoom extends State<ParticipateRoom> {
                       ),
                     ),
                   ),
-                  // if (_isValid)
-                  //   const Padding(
-                  //     padding: EdgeInsets.all(16.0),
-                  //     child: Text('입장 가능합니다.'),
-                  //   ),
-                  // if (!_isValid && _inputController.text.isNotEmpty)
-                  //   const Padding(
-                  //     padding: EdgeInsets.all(16.0),
-                  //     child: Text('입장 불가능합니다.'),
-                  //   ),
                 ],
               ),
             );

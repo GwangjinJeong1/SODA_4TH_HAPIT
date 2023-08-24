@@ -63,7 +63,7 @@ class _TasksState extends State<Tasks> {
     setState(() {});
   }
 
-  int compareDocuments(DocumentSnapshot a, DocumentSnapshot b) {
+  int compareDone(DocumentSnapshot a, DocumentSnapshot b) {
     bool isDoneA = a['isDone'];
     bool isDoneB = b['isDone'];
 
@@ -72,10 +72,27 @@ class _TasksState extends State<Tasks> {
       // isDone 값이 같을 경우 순서 변경 없음
       return 0;
     } else if (isDoneA) {
-      // isDone=true 인 문서를 뒤로 이동
+      // isDone=treu 인 문서를 뒤로 이동
       return 1;
     } else {
       // isDone=false 인 문서를 앞으로 이동
+      return -1;
+    }
+  }
+
+  int compareFriend(DocumentSnapshot a, DocumentSnapshot b) {
+    bool isFriendA = a['isFriend'];
+    bool isFriendB = b['isFriend'];
+
+    // isDone 값 비교
+    if (isFriendA == isFriendB) {
+      // isFriend 값이 같을 경우 순서 변경 없음
+      return 0;
+    } else if (isFriendB) {
+      // isFriend=false 인 문서를 뒤로 이동
+      return 1;
+    } else {
+      // isFriend=true 인 문서를 앞으로 이동
       return -1;
     }
   }
@@ -135,8 +152,9 @@ class _TasksState extends State<Tasks> {
                   ));
                 } else {
                   List<DocumentSnapshot> documents = snapshot.data!.docs;
-                  documents.sort(compareDocuments);
 
+                  documents.sort(compareFriend);
+                  documents.sort(compareDone);
                   _calculateCompletionRate(documents);
                   return ListView.builder(
                       itemCount: documents.length,
@@ -185,7 +203,9 @@ class _TasksState extends State<Tasks> {
 
                                   _updateCompletionRate();
                                 },
-                                activeColor: AppColors.monthBlue4,
+                                activeColor: data['isFriend']
+                                    ? AppColors.monthGreen4
+                                    : AppColors.monthBlue4,
                                 side: MaterialStateBorderSide.resolveWith(
                                   (states) => BorderSide(
                                       width: 1.0,
@@ -274,86 +294,115 @@ class _WeekCalendarState extends State<WeekCalendar> {
         isTodayHighlighted: false,
         cellMargin: EdgeInsets.zero,
       ),
-      calendarBuilders: CalendarBuilders(
-        defaultBuilder: (context, date, events) {
-          final dowText =
-              DateFormat(DateFormat.ABBR_WEEKDAY, 'ko_KR').format(date);
-          final dayText = date.day.toString();
+      calendarBuilders:
+          CalendarBuilders(defaultBuilder: (context, date, events) {
+        final dowText =
+            DateFormat(DateFormat.ABBR_WEEKDAY, 'ko_KR').format(date);
+        final dayText = date.day.toString();
 
-          return Center(
-            child: Container(
-              height: 65,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.0),
-                color: AppColors.background1,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      dowText,
-                      style: AppTextStyle.sub2,
-                    ),
-                    const SizedBox(height: 2.5),
-                    Text(
-                      dayText,
-                      style: AppTextStyle.body1,
-                    ),
-                  ],
-                ),
+        return Center(
+          child: Container(
+            height: 65,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8.0),
+              color: AppColors.background1,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    dowText,
+                    style: AppTextStyle.sub2,
+                  ),
+                  const SizedBox(height: 2.5),
+                  Text(
+                    dayText,
+                    style: AppTextStyle.body1,
+                  ),
+                ],
               ),
             ),
-          );
-        },
-        selectedBuilder: (context, date, events) {
-          final dowText =
-              DateFormat(DateFormat.ABBR_WEEKDAY, 'ko_KR').format(date);
-          final dayText = date.day.toString();
+          ),
+        );
+      }, selectedBuilder: (context, date, events) {
+        final dowText =
+            DateFormat(DateFormat.ABBR_WEEKDAY, 'ko_KR').format(date);
+        final dayText = date.day.toString();
 
-          return Center(
-            child: Container(
-              width: 38,
-              height: 65,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  color: AppColors.background2,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 6.0,
-                      spreadRadius: 0.0,
-                      offset: const Offset(0, 2),
-                    ),
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
-                      blurRadius: 4.0,
-                      spreadRadius: 0.0,
-                      offset: const Offset(0, 1),
-                    )
-                  ]),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      dowText,
-                      style: AppTextStyle.sub2,
-                    ),
-                    const SizedBox(height: 2.5),
-                    Text(
-                      dayText,
-                      style: AppTextStyle.body1,
-                    ),
-                  ],
-                ),
+        return Center(
+          child: Container(
+            width: 38,
+            height: 65,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: AppColors.background2,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 6.0,
+                    spreadRadius: 0.0,
+                    offset: const Offset(0, 2),
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.15),
+                    blurRadius: 4.0,
+                    spreadRadius: 0.0,
+                    offset: const Offset(0, 1),
+                  )
+                ]),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    dowText,
+                    style: AppTextStyle.sub2,
+                  ),
+                  const SizedBox(height: 2.5),
+                  Text(
+                    dayText,
+                    style: AppTextStyle.body1,
+                  ),
+                ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      }, outsideBuilder: (context, date, events) {
+        final dowText =
+            DateFormat(DateFormat.ABBR_WEEKDAY, 'ko_KR').format(date);
+        final dayText = date.day.toString();
+
+        return Center(
+          child: Container(
+            height: 65,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8.0),
+              color: AppColors.background1,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    dowText,
+                    style: AppTextStyle.sub2,
+                  ),
+                  const SizedBox(height: 2.5),
+                  Text(
+                    dayText,
+                    style: AppTextStyle.body1,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }),
     );
   }
 }
@@ -497,6 +546,7 @@ class CompletionRate extends StatefulWidget {
 class _CompletionRateState extends State<CompletionRate> {
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
     return Padding(
       padding: const EdgeInsets.only(left: 5.3, top: 10, right: 5),
       child: Column(
@@ -551,34 +601,33 @@ class _CompletionRateState extends State<CompletionRate> {
           const SizedBox(height: 22),
           Row(
             children: [
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(9),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(9),
-                      border:
-                          Border.all(color: AppColors.buttonStroke, width: 1.5),
-                    ),
-                    child: LinearPercentIndicator(
-                      padding: EdgeInsets.zero,
-                      percent: widget.ratio,
-                      lineHeight: 18,
-                      backgroundColor: AppColors.background1,
-                      barRadius: const Radius.circular(9),
-                      linearGradient: LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: [
-                          const Color(0xff78E1EF).withOpacity(0.4),
-                          const Color(0xff00E1FF).withOpacity(1)
-                        ],
-                      ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(9),
+                child: Container(
+                  width: width * 0.67,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(9),
+                    border:
+                        Border.all(color: AppColors.buttonStroke, width: 1.5),
+                  ),
+                  child: LinearPercentIndicator(
+                    padding: EdgeInsets.zero,
+                    percent: widget.ratio,
+                    lineHeight: 18,
+                    backgroundColor: AppColors.background1,
+                    barRadius: const Radius.circular(9),
+                    linearGradient: LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        const Color(0xff78E1EF).withOpacity(0.4),
+                        const Color(0xff00E1FF).withOpacity(1)
+                      ],
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: 15),
+              const Spacer(),
               Text('${(widget.ratio * 100).toInt()}%',
                   style: AppTextStyle.head2)
             ],

@@ -429,7 +429,7 @@ class _HabitCardState extends State<HabitCard> {
     _selectedDay = widget.selectedDay;
   }
 
-  int compareDocuments(DocumentSnapshot a, DocumentSnapshot b) {
+  int compareDone(DocumentSnapshot a, DocumentSnapshot b) {
     bool isDoneA = a['isDone'];
     bool isDoneB = b['isDone'];
 
@@ -442,6 +442,23 @@ class _HabitCardState extends State<HabitCard> {
       return 1;
     } else {
       // isDone=true 인 문서를 앞으로 이동
+      return -1;
+    }
+  }
+
+  int compareFriend(DocumentSnapshot a, DocumentSnapshot b) {
+    bool isFriendA = a['isFriend'];
+    bool isFriendB = b['isFriend'];
+
+    // isDone 값 비교
+    if (isFriendA == isFriendB) {
+      // isFriend 값이 같을 경우 순서 변경 없음
+      return 0;
+    } else if (isFriendB) {
+      // isFriend=false 인 문서를 뒤로 이동
+      return 1;
+    } else {
+      // isFriend=true 인 문서를 앞으로 이동
       return -1;
     }
   }
@@ -504,8 +521,9 @@ class _HabitCardState extends State<HabitCard> {
                   );
                 } else {
                   final documents = snapshot.data!.docs;
-                  documents.sort(compareDocuments);
 
+                  documents.sort(compareFriend);
+                  documents.sort(compareDone);
                   return ListView.builder(
                     itemCount: documents.length,
                     itemBuilder: (context, index) {
@@ -522,7 +540,9 @@ class _HabitCardState extends State<HabitCard> {
                             leading: Checkbox(
                               value: data['isDone'],
                               onChanged: (value) {},
-                              activeColor: AppColors.monthBlue4,
+                              activeColor: data['isFriend']
+                                  ? AppColors.monthGreen4
+                                  : AppColors.monthBlue4,
                               side: MaterialStateBorderSide.resolveWith(
                                 (states) => BorderSide(
                                     width: 1.0,
@@ -594,6 +614,7 @@ class MonthCompletionRate extends StatefulWidget {
 class _MonthCompletionRateState extends State<MonthCompletionRate> {
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
     return Padding(
       padding: const EdgeInsets.only(left: 5.3, top: 10, right: 5),
       child: Column(
@@ -615,34 +636,33 @@ class _MonthCompletionRateState extends State<MonthCompletionRate> {
           const SizedBox(height: 25),
           Row(
             children: [
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(9),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(9),
-                      border:
-                          Border.all(color: AppColors.buttonStroke, width: 1.5),
-                    ),
-                    child: LinearPercentIndicator(
-                      padding: EdgeInsets.zero,
-                      percent: widget.ratio,
-                      lineHeight: 18,
-                      backgroundColor: AppColors.background1,
-                      barRadius: const Radius.circular(9),
-                      linearGradient: LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: [
-                          const Color(0xff78E1EF).withOpacity(0.4),
-                          const Color(0xff00E1FF).withOpacity(1)
-                        ],
-                      ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(9),
+                child: Container(
+                  width: width * 0.67,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(9),
+                    border:
+                        Border.all(color: AppColors.buttonStroke, width: 1.5),
+                  ),
+                  child: LinearPercentIndicator(
+                    padding: EdgeInsets.zero,
+                    percent: widget.ratio,
+                    lineHeight: 18,
+                    backgroundColor: AppColors.background1,
+                    barRadius: const Radius.circular(9),
+                    linearGradient: LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        const Color(0xff78E1EF).withOpacity(0.4),
+                        const Color(0xff00E1FF).withOpacity(1)
+                      ],
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: 15),
+              const Spacer(),
               Text('${(widget.ratio * 100).toInt()}%',
                   style: AppTextStyle.head2)
             ],

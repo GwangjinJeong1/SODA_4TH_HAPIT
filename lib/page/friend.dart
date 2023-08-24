@@ -127,7 +127,7 @@ class CreateRoom extends StatefulWidget {
 class _CreateRoomState extends State<CreateRoom> {
   final TextEditingController _purposeController = TextEditingController();
   DateTime today = DateTime.now();
-  final user = FirebaseAuth.instance.currentUser;
+
   List<DateTime> days = [];
 
   @override
@@ -235,7 +235,12 @@ class _CreateRoomState extends State<CreateRoom> {
                 ),
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Future.delayed(
+                        const Duration(seconds: 0),
+                        () => showModalBottomSheet(
+                              context: context,
+                              builder: (context) => WithFriend(),
+                            ));
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.button1,
@@ -262,11 +267,34 @@ class _CreateRoomState extends State<CreateRoom> {
                     final habitDates = days.map((day) {
                       return DateFormat('yyyy-MM-dd').format(day);
                     }).toList();
-                    // final habitDate = DateFormat('yyyy-MM-dd').format(today);
 
-                    await _addFriendHabits(habitName, habitDates);
+                    int randomRoomNumber = Random().nextInt(9000) + 1000;
+                    String purpose = _purposeController.text;
 
-                    Navigator.of(context).pop();
+                    await FirebaseFirestore.instance
+                        .collection('rooms')
+                        .doc(randomRoomNumber.toString())
+                        .set({
+                      'roomNumber': randomRoomNumber,
+                      'purpose': purpose, // Add the purpose field here
+                    });
+                    _cleanUp();
+
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(16), // 원하는 값으로 변경
+                          ),
+                          child: CreatedRoomPage(
+                              roomNumber: randomRoomNumber,
+                              habitName: habitName,
+                              habitDates: habitDates),
+                        );
+                      },
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.button2,
@@ -281,28 +309,7 @@ class _CreateRoomState extends State<CreateRoom> {
     );
   }
 
-  Future _addFriendHabits(String habitName, List<String> habitDates) async {
-    for (int i = 0; i < habitDates.length; i++) {
-      DocumentReference docRef =
-          await FirebaseFirestore.instance.collection('habits').add(
-        {
-          'habitName': habitName,
-          'habitDate': habitDates[i],
-          'isDone': false,
-          'isAlert': false,
-          'isFriend': true,
-          'UID': user?.uid,
-        },
-      );
-      String habitId = docRef.id;
-      await FirebaseFirestore.instance.collection('habits').doc(habitId).update(
-        {'id': habitId},
-      );
-    }
-    _clearAll();
-  }
-
-  void _clearAll() {
+  void _cleanUp() {
     _purposeController.text = '';
   }
 }
@@ -310,8 +317,13 @@ class _CreateRoomState extends State<CreateRoom> {
 //-------------------------이 부분이 팝업 창으로 나와야 하는 곳----------------------
 class CreatedRoomPage extends StatefulWidget {
   final int roomNumber;
-
-  const CreatedRoomPage({super.key, required this.roomNumber});
+  final String habitName;
+  final List<String> habitDates;
+  const CreatedRoomPage(
+      {super.key,
+      required this.roomNumber,
+      required this.habitName,
+      required this.habitDates});
 
   @override
   State<CreatedRoomPage> createState() => _CreatedRoomPageState();
@@ -319,6 +331,7 @@ class CreatedRoomPage extends StatefulWidget {
 
 class _CreatedRoomPageState extends State<CreatedRoomPage> {
   final TextEditingController _inputController = TextEditingController();
+  final user = FirebaseAuth.instance.currentUser;
   bool _isValid = false;
 
   @override
@@ -365,8 +378,6 @@ class _CreatedRoomPageState extends State<CreatedRoomPage> {
             Map<String, dynamic> roomData =
                 snapshot.data!.data() as Map<String, dynamic>;
             List<dynamic> participants = roomData['participants'] ?? [];
-
-            User? user = FirebaseAuth.instance.currentUser;
 
             return Center(
               child: Column(
@@ -415,13 +426,14 @@ class _CreatedRoomPageState extends State<CreatedRoomPage> {
                               const Color.fromRGBO(100, 215, 251, 1)),
                       onPressed: () async {
                         if (user != null) {
+                          _addFriendHabits(widget.habitName, widget.habitDates);
                           String userNickname;
 
                           // 현재 사용자의 UID를 이용해 users 컬렉션에서 문서를 가져옴
                           DocumentSnapshot userSnapshot =
                               await FirebaseFirestore.instance
                                   .collection('users')
-                                  .doc(user.uid)
+                                  .doc(user?.uid)
                                   .get();
 
                           // 가져온 문서에서 'nickname' 필드 값을 가져옴
@@ -438,6 +450,7 @@ class _CreatedRoomPageState extends State<CreatedRoomPage> {
                               .doc(widget.roomNumber.toString())
                               .update({
                             'participants': participants,
+                            'dateList': widget.habitDates,
                           });
 
                           // ignore: use_build_context_synchronously
@@ -469,12 +482,26 @@ class _CreatedRoomPageState extends State<CreatedRoomPage> {
       ),
     );
   }
-}
 
-void main() {
-  runApp(const MaterialApp(
-    home: WithFriend(),
-  ));
+  Future _addFriendHabits(String habitName, List<String> habitDates) async {
+    for (int i = 0; i < habitDates.length; i++) {
+      DocumentReference docRef =
+          await FirebaseFirestore.instance.collection('habits').add(
+        {
+          'habitName': habitName,
+          'habitDate': habitDates[i],
+          'isDone': false,
+          'isAlert': false,
+          'isFriend': true,
+          'UID': user?.uid,
+        },
+      );
+      String habitId = docRef.id;
+      await FirebaseFirestore.instance.collection('habits').doc(habitId).update(
+        {'id': habitId},
+      );
+    }
+  }
 }
 
 //---------------------------join
@@ -570,24 +597,106 @@ class _JoinRoomPageState extends State<JoinRoomPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
+    return Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              "초대코드 입력",
-              style: TextStyle(
-                color: Color.fromRGBO(14, 15, 14, 1),
-                fontFamily: 'SpoqaHanSansNeo-Medium',
-                fontSize: 15,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text(
+          "초대코드 입력",
+          style: TextStyle(
+            color: Color.fromRGBO(14, 15, 14, 1),
+            fontFamily: 'SpoqaHanSansNeo-Medium',
+            fontSize: 15,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 10, bottom: 30),
+          child: SizedBox(
+            width: 219,
+            height: 50,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16), // BorderRadius 설정
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color.fromRGBO(0, 0, 0, 0.15),
+                    offset: Offset(0, 1),
+                    blurRadius: 4,
+                    spreadRadius: 0,
+                  ),
+                ],
+              ),
+              child: TextField(
+                controller: _inputController,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: const Color.fromRGBO(214, 220, 220, 1),
+                  border: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(214, 220, 220, 1)),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(214, 220, 220, 1)),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                        color: Color.fromRGBO(214, 220, 220, 1)),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 30),
-              child: SizedBox(
-                width: 219,
-                height: 50,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 150),
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 10, left: 150),
+                child: SizedBox(
+                  width: 100,
+                  height: 34,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius:
+                          BorderRadius.circular(16), // BorderRadius 설정
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color.fromRGBO(0, 0, 0, 0.15),
+                          offset: Offset(0, 1),
+                          blurRadius: 4,
+                          spreadRadius: 0,
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        backgroundColor:
+                            (const Color.fromRGBO(237, 237, 237, 1)),
+                      ),
+                      onPressed: () {},
+                      child: const Text(
+                        '취소',
+                        style: TextStyle(
+                          color: Color.fromRGBO(14, 15, 14, 1),
+                          fontFamily: 'SpoqaHanSansNeo-Medium',
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 100,
+                height: 34,
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16), // BorderRadius 설정
@@ -600,124 +709,37 @@ class _JoinRoomPageState extends State<JoinRoomPage> {
                       ),
                     ],
                   ),
-                  child: TextField(
-                    controller: _inputController,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: const Color.fromRGBO(214, 220, 220, 1),
-                      border: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                            color: Color.fromRGBO(214, 220, 220, 1)),
-                        borderRadius: BorderRadius.circular(16),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                            color: Color.fromRGBO(214, 220, 220, 1)),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(
-                            color: Color.fromRGBO(214, 220, 220, 1)),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
+                      backgroundColor: (const Color.fromRGBO(100, 215, 251, 1)),
                     ),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 150),
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 10, left: 150),
-                    child: SizedBox(
-                      width: 100,
-                      height: 34,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(16), // BorderRadius 설정
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color.fromRGBO(0, 0, 0, 0.15),
-                              offset: Offset(0, 1),
-                              blurRadius: 4,
-                              spreadRadius: 0,
-                            ),
-                          ],
-                        ),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            backgroundColor:
-                                (const Color.fromRGBO(237, 237, 237, 1)),
-                          ),
-                          onPressed: () {},
-                          child: const Text(
-                            '취소',
+                    onPressed: _isLoading ? null : _checkRoomAndJoin,
+                    child: _isLoading
+                        ? const CircularProgressIndicator()
+                        : const Text(
+                            '완료',
                             style: TextStyle(
                               color: Color.fromRGBO(14, 15, 14, 1),
                               fontFamily: 'SpoqaHanSansNeo-Medium',
                               fontSize: 15,
                             ),
                           ),
-                        ),
-                      ),
-                    ),
                   ),
-                  SizedBox(
-                    width: 100,
-                    height: 34,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.circular(16), // BorderRadius 설정
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color.fromRGBO(0, 0, 0, 0.15),
-                            offset: Offset(0, 1),
-                            blurRadius: 4,
-                            spreadRadius: 0,
-                          ),
-                        ],
-                      ),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          backgroundColor:
-                              (const Color.fromRGBO(100, 215, 251, 1)),
-                        ),
-                        onPressed: _isLoading ? null : _checkRoomAndJoin,
-                        child: _isLoading
-                            ? const CircularProgressIndicator()
-                            : const Text(
-                                '완료',
-                                style: TextStyle(
-                                  color: Color.fromRGBO(14, 15, 14, 1),
-                                  fontFamily: 'SpoqaHanSansNeo-Medium',
-                                  fontSize: 15,
-                                ),
-                              ),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-            if (!_isLoading && !_isValid && _inputController.text.isNotEmpty)
-              const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text('유효하지 않은 방 번호입니다.'),
-              ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+        if (!_isLoading && !_isValid && _inputController.text.isNotEmpty)
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text('유효하지 않은 방 번호입니다.'),
+          ),
+      ],
+    ));
   }
 }
 
@@ -736,12 +758,39 @@ class ParticipateRoom extends StatefulWidget {
 class _ParticipateRoom extends State<ParticipateRoom> {
   final TextEditingController _inputController = TextEditingController();
   bool _isValid = false;
+  List<String> days = [];
 
   @override
   void initState() {
     super.initState();
     _inputController.text = widget.roomNumber.toString();
     _checkInput();
+    _loadDateList();
+  }
+
+  Future<void> _loadDateList() async {
+    DocumentSnapshot roomSnapshot = await FirebaseFirestore.instance
+        .collection('rooms')
+        .doc(widget.roomNumber.toString())
+        .get();
+
+    if (roomSnapshot.exists) {
+      Map<String, dynamic> roomData =
+          roomSnapshot.data() as Map<String, dynamic>;
+      List<dynamic> dateList = roomData['dateList'] ?? [];
+
+      // 오늘 이후의 날짜들을 찾아 days 리스트에 저장
+      String today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+      for (String dateStr in dateList) {
+        if ((dateStr == today) || (dateStr.compareTo(today) > 0)) {
+          days.add(dateStr);
+        }
+      }
+
+      setState(() {
+        // 데이터가 로드되면 다시 렌더링
+      });
+    }
   }
 
   void _checkInput() {
@@ -760,148 +809,166 @@ class _ParticipateRoom extends State<ParticipateRoom> {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
     return SizedBox(
       width: 311,
       height: 230,
-      child: Scaffold(
-        body: FutureBuilder<DocumentSnapshot>(
-          future: FirebaseFirestore.instance
-              .collection('rooms')
-              .doc(widget.roomNumber.toString())
-              .get(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return const Center(child: Text('오류가 발생했습니다.'));
-            }
+      child: FutureBuilder<DocumentSnapshot>(
+        future: FirebaseFirestore.instance
+            .collection('rooms')
+            .doc(widget.roomNumber.toString())
+            .get(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Center(child: Text('오류가 발생했습니다.'));
+          }
 
-            if (!snapshot.hasData || !snapshot.data!.exists) {
-              return const Center(child: Text('방이 존재하지 않습니다.'));
-            }
+          if (!snapshot.hasData || !snapshot.data!.exists) {
+            return const Center(child: Text('방이 존재하지 않습니다.'));
+          }
 
-            Map<String, dynamic> roomData =
-                snapshot.data!.data() as Map<String, dynamic>;
-            List<dynamic> participants = roomData['participants'] ?? [];
-            String purpose = roomData['purpose'] ?? '목표 없음'; // purpose 필드 추가
+          Map<String, dynamic> roomData =
+              snapshot.data!.data() as Map<String, dynamic>;
+          List<dynamic> participants = roomData['participants'] ?? [];
+          String purpose = roomData['purpose'] ?? '목표 없음'; // purpose 필드 추가
 
-            User? user = FirebaseAuth.instance.currentUser;
+          String ownerName =
+              participants.isNotEmpty ? participants[0] : 'Unknown';
 
-            String ownerName =
-                participants.isNotEmpty ? participants[0] : 'Unknown';
-
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SvgPicture.asset('public/images/friend_off.svg'),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 13, bottom: 13),
-                    child: Text('목록확인', style: AppTextStyle.sub1),
-                  ),
-                  Text(purpose, style: AppTextStyle.sub2), // purpose를 출력하는 부분
-                  Padding(
-                    padding: const EdgeInsets.only(top: 13, bottom: 13),
-                    child: Container(
-                      width: 108,
-                      height: 34,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color.fromRGBO(0, 0, 0, 0.15),
-                            offset: Offset(0, 1),
-                            blurRadius: 4,
-                            spreadRadius: 0,
-                          ),
-                        ],
-                        color:
-                            const Color.fromRGBO(225, 251, 255, 1), // 원하는 배경 색상
-                      ),
-                      child: Center(
-                        child: Text(
-                          '방장: $ownerName',
-                          textAlign: TextAlign.center,
-                          style: AppTextStyle.body3,
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset('public/images/friend_off.svg'),
+                Padding(
+                  padding: const EdgeInsets.only(top: 13, bottom: 13),
+                  child: Text('목록확인', style: AppTextStyle.sub1),
+                ),
+                Text(purpose, style: AppTextStyle.sub2), // purpose를 출력하는 부분
+                Padding(
+                  padding: const EdgeInsets.only(top: 13, bottom: 13),
+                  child: Container(
+                    width: 108,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color.fromRGBO(0, 0, 0, 0.15),
+                          offset: Offset(0, 1),
+                          blurRadius: 4,
+                          spreadRadius: 0,
                         ),
+                      ],
+                      color:
+                          const Color.fromRGBO(225, 251, 255, 1), // 원하는 배경 색상
+                    ),
+                    child: Center(
+                      child: Text(
+                        '방장: $ownerName',
+                        textAlign: TextAlign.center,
+                        style: AppTextStyle.body3,
                       ),
                     ),
                   ),
-                  SizedBox(
-                    child: Container(
-                      width: 100,
-                      height: 34,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(4), // BorderRadius 설정
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color.fromRGBO(0, 0, 0, 0.15),
-                              offset: Offset(0, 1),
-                              blurRadius: 4,
-                              spreadRadius: 0,
-                            ),
-                          ],
-                        ),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.button2, // 원하는 색상으로 변경
-                            // 나머지 스타일 속성들...
-                          ),
-                          onPressed: () async {
-                            if (user != null) {
-                              String userId;
-                              String userNickname;
-
-                              // 현재 사용자의 UID를 이용해 users 컬렉션에서 문서를 가져옴
-                              DocumentSnapshot userSnapshot =
-                                  await FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(user.uid)
-                                      .get();
-
-                              // 가져온 문서에서 'nickname' 필드 값을 가져옴
-                              if (userSnapshot.exists) {
-                                userId = userSnapshot.get('userId');
-                                userNickname = userSnapshot.get('nickname');
-                              } else {
-                                userId = 'Unknown';
-                                userNickname = 'Unknwon';
-                              }
-
-                              participants.add(userId);
-
-                              await FirebaseFirestore.instance
-                                  .collection('rooms')
-                                  .doc(widget.roomNumber.toString())
-                                  .update({
-                                'participants': participants,
-                              });
-
-                              // ignore: use_build_context_synchronously
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => RoomPage(
-                                      roomNumber: widget.roomNumber,
-                                      nickname:
-                                          userNickname), // 여기서 nickname 전달
-                                ),
-                              );
-                            }
-                          },
-                          child: Text('확인',
-                              textAlign: TextAlign.center,
-                              style: AppTextStyle.body3),
-                        ),
+                ),
+                Container(
+                  width: 100,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4), // BorderRadius 설정
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.15),
+                        offset: Offset(0, 1),
+                        blurRadius: 4,
+                        spreadRadius: 0,
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-            );
-          },
-        ),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.button2, // 원하는 색상으로 변경
+                      // 나머지 스타일 속성들...
+                    ),
+                    onPressed: () async {
+                      if (user != null) {
+                        String userId;
+                        String userNickname;
+
+                        // 현재 사용자의 UID를 이용해 users 컬렉션에서 문서를 가져옴
+                        DocumentSnapshot userSnapshot = await FirebaseFirestore
+                            .instance
+                            .collection('users')
+                            .doc(user.uid)
+                            .get();
+
+                        DocumentSnapshot roomSnapshot = await FirebaseFirestore
+                            .instance
+                            .collection('rooms')
+                            .doc(widget.roomNumber.toString())
+                            .get();
+
+                        // 가져온 문서에서 'nickname' 필드 값을 가져옴
+                        if (userSnapshot.exists) {
+                          userId = userSnapshot.get('userId');
+                          userNickname = userSnapshot.get('nickname');
+                        } else {
+                          userId = 'Unknown';
+                          userNickname = 'Unknwon';
+                        }
+
+                        participants.add(userId);
+
+                        await FirebaseFirestore.instance
+                            .collection('rooms')
+                            .doc(widget.roomNumber.toString())
+                            .update({
+                          'participants': participants,
+                        });
+
+                        // 목록 추가
+                        _addFriendHabits(roomSnapshot.get('purpose'), days);
+                        // ignore: use_build_context_synchronously
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RoomPage(
+                                roomNumber: widget.roomNumber,
+                                nickname: userNickname), // 여기서 nickname 전달
+                          ),
+                        );
+                      }
+                    },
+                    child: Text('확인',
+                        textAlign: TextAlign.center, style: AppTextStyle.body3),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
+  }
+
+  Future _addFriendHabits(String habitName, List<String> habitDates) async {
+    for (int i = 0; i < habitDates.length; i++) {
+      DocumentReference docRef =
+          await FirebaseFirestore.instance.collection('habits').add(
+        {
+          'habitName': habitName,
+          'habitDate': habitDates[i],
+          'isDone': false,
+          'isAlert': false,
+          'isFriend': true,
+          'UID': FirebaseAuth.instance.currentUser?.uid,
+        },
+      );
+      String habitId = docRef.id;
+      await FirebaseFirestore.instance.collection('habits').doc(habitId).update(
+        {'id': habitId},
+      );
+    }
   }
 }

@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:soda_4th_hapit/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'page/home.dart';
+import 'page/login_signup.dart';
 import 'page/friendPage.dart';
 import 'page/profile.dart';
 
@@ -75,7 +75,7 @@ class _LoginAndSignUpState extends State<LoginAndSignUp> {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      home: HomePage(),
+      home: HomeScreen(),
     );
   }
 }

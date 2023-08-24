@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:soda_4th_hapit/page/calendar.dart';
-import 'package:soda_4th_hapit/page/friend_part.dart';
+import './calendar.dart';
+import './friend_part.dart';
 
 class WithFriend extends StatelessWidget {
   const WithFriend({super.key});
@@ -29,7 +29,7 @@ class WithFriend extends StatelessWidget {
                     isScrollControlled: true,
                     context: context,
                     builder: (BuildContext context) {
-                      return SizedBox(height: 500, child: CreateRoom());
+                      return const SizedBox(height: 500, child: CreateRoom());
                     },
                   );
                 },
@@ -59,7 +59,8 @@ class WithFriend extends StatelessWidget {
                       isScrollControlled: true,
                       context: context,
                       builder: (BuildContext context) {
-                        return SizedBox(height: 500, child: JoinRoomPage());
+                        return const SizedBox(
+                            height: 500, child: JoinRoomPage());
                       },
                     );
                   },
@@ -155,7 +156,7 @@ class _CreateRoomState extends State<CreateRoom> {
                                 isScrollControlled: true,
                                 context: context,
                                 builder: (BuildContext context) {
-                                  return SizedBox(
+                                  return const SizedBox(
                                     height: 500, // 계산한 높이를 설정
                                     child: WithFriend(), // 또는 다른 원하는 위젯을 여기에 배치
                                   );

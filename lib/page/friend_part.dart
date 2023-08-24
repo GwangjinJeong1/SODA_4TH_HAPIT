@@ -1,33 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:soda_4th_hapit/page/tasks.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import '../components/colors.dart';
+import '../components/textStyle.dart';
 
 class RoomPage extends StatefulWidget {
   final int roomNumber;
   final String nickname;
 
-  RoomPage({
+  const RoomPage({
+    super.key,
     required this.roomNumber,
     required this.nickname,
   });
 
   @override
-  _RoomPageState createState() => _RoomPageState();
+  State<RoomPage> createState() => _RoomPageState();
 }
 
 class _RoomPageState extends State<RoomPage> {
   int _selectedIndex = 0; // Set the index to the one that should be active
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
-  TextEditingController _motivationController = TextEditingController();
+  final TextEditingController _motivationController = TextEditingController();
 
   Future<void> updateMotivation(String content) async {
     try {
@@ -35,9 +29,8 @@ class _RoomPageState extends State<RoomPage> {
           .collection('rooms')
           .doc(widget.roomNumber.toString())
           .update({'motivation': content});
-      print('Motivation updated successfully!');
     } catch (error) {
-      print('Error updating motivation: $error');
+      print(error);
     }
   }
 
@@ -68,7 +61,7 @@ class _RoomPageState extends State<RoomPage> {
             String purpose = roomData['purpose'] ?? '목표 없음';
 
             return Text(
-              '$purpose',
+              purpose,
               style: const TextStyle(
                   color: Color.fromRGBO(14, 15, 14, 1),
                   fontFamily: 'SpoqaHanSansNeo-Regular',
@@ -86,15 +79,33 @@ class _RoomPageState extends State<RoomPage> {
             .get(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
+            return const Center(
+                child: Text('데이터 불러오는 중...',
+                    style: TextStyle(
+                        fontFamily: 'SpoqaHanSansNeo-Medium',
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xff999F9B))));
           }
 
           if (snapshot.hasError) {
-            return Center(child: Text('오류가 발생했습니다.'));
+            return const Center(
+                child: Text('오류가 발생했습니다.',
+                    style: TextStyle(
+                        fontFamily: 'SpoqaHanSansNeo-Medium',
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.alert)));
           }
 
           if (!snapshot.hasData || !snapshot.data!.exists) {
-            return Center(child: Text('방이 존재하지 않습니다.'));
+            return const Center(
+                child: Text('방이 존재하지 않습니다.',
+                    style: TextStyle(
+                        fontFamily: 'SpoqaHanSansNeo-Medium',
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xff999F9B))));
           }
 
           Map<String, dynamic> roomData =
@@ -167,11 +178,7 @@ class _RoomPageState extends State<RoomPage> {
                             padding: const EdgeInsets.only(bottom: 72),
                             child: Text(
                               participant,
-                              style: const TextStyle(
-                                  color: Color.fromRGBO(14, 15, 14, 1),
-                                  fontFamily: 'SpoqaHanSansNeo-Regular',
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500),
+                              style: AppTextStyle.body2,
                             ),
                           ),
                         ],

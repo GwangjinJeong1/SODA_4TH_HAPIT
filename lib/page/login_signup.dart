@@ -256,7 +256,8 @@ class _SignUPState extends State<SignUP> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
   final TextEditingController _nicknameController = TextEditingController();
-  String _profileImageUrl = 'public/images/profile.svg'; // Default image URL
+  final String _profileImageUrl =
+      'public/images/profile.svg'; // Default image URL
 
   createUserWithEmailAndPassword() async {
     try {

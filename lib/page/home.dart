@@ -5,7 +5,6 @@ import '../components/colors.dart';
 
 import 'tasks.dart';
 import '../components/textStyle.dart';
-import 'package:soda_4th_hapit/page/profile.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 import './calendar.dart';
 import './friend_part.dart';
 import '../components/textStyle.dart';
@@ -12,6 +13,7 @@ class WithFriend extends StatelessWidget {
   const WithFriend({super.key});
   @override
   Widget build(BuildContext context) {
+    DateTime selectedDay = DateTime.now();
     return Scaffold(
       body: Center(
         child: Column(
@@ -39,12 +41,12 @@ class WithFriend extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
+                    await Future.delayed(const Duration(seconds: 0));
                     showModalBottomSheet(
-                      isScrollControlled: true,
                       context: context,
                       builder: (BuildContext context) {
-                        return const SizedBox(height: 450, child: CreateRoom());
+                        return CreateRoom(selectedDay: selectedDay);
                       },
                     );
                   },
@@ -115,7 +117,8 @@ class WithFriend extends StatelessWidget {
 //---------------------------------- 친구와 함께 방 생성하는 곳----------------------------
 
 class CreateRoom extends StatefulWidget {
-  const CreateRoom({super.key});
+  final DateTime selectedDay;
+  const CreateRoom({super.key, required this.selectedDay});
 
   @override
   State<CreateRoom> createState() => _CreateRoomState();
@@ -123,6 +126,9 @@ class CreateRoom extends StatefulWidget {
 
 class _CreateRoomState extends State<CreateRoom> {
   final TextEditingController _purposeController = TextEditingController();
+  DateTime today = DateTime.now();
+  final user = FirebaseAuth.instance.currentUser;
+  List<DateTime> days = [];
 
   @override
   void dispose() {
@@ -132,164 +138,172 @@ class _CreateRoomState extends State<CreateRoom> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 100, top: 20, bottom: 20),
-              child: SizedBox(
-                width: 220,
-                child: TextFormField(
-                  controller: _purposeController,
-                  decoration: const InputDecoration(
-                    hintText: "목록을 입력하세요.",
-                    hintStyle: TextStyle(
-                        color: Color.fromRGBO(153, 159, 155, 1),
-                        fontFamily: 'SpoqaHanSansNeo-Medium',
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500),
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                          width: 1.5, color: Color.fromRGBO(14, 15, 14, 1)),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Color.fromRGBO(14, 15, 14, 1)),
-                    ),
-                  ),
-                ),
+    var width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
+    return Container(
+      padding: const EdgeInsets.all(16), // 여백을 추가합니다.
+      height: height * 0.55, // 높이를 조절합니다.
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: width * 0.58,
+            child: TextFormField(
+              controller: _purposeController,
+              style: AppTextStyle.body1,
+              cursorColor: AppColors.buttonStroke,
+              decoration: InputDecoration(
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                enabledBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.buttonStroke)),
+                focusedBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.buttonStroke)),
+                hintText: '목록을 입력하세요',
+                hintStyle: AppTextStyle.body1,
               ),
             ),
-            Stack(
-              children: [
-                const WithCalendar(),
-                Padding(
-                  padding: const EdgeInsets.only(top: 300, left: 150),
-                  child: Row(
+          ),
+          SizedBox(
+            height: height * 0.35,
+            width: width,
+            child: Form(
+              child: Column(
+                children: <Widget>[
+                  const SizedBox(height: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: SizedBox(
-                          width: 100,
-                          height: 34,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(16), // BorderRadius 설정
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Color.fromRGBO(0, 0, 0, 0.15),
-                                  offset: Offset(0, 1),
-                                  blurRadius: 4,
-                                  spreadRadius: 0,
-                                ),
-                              ],
-                            ),
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                backgroundColor:
-                                    (const Color.fromRGBO(237, 237, 237, 1)),
-                              ),
-                              onPressed: () {
-                                showModalBottomSheet<void>(
-                                  isScrollControlled: true,
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return const SizedBox(
-                                      height: 450, // 계산한 높이를 설정
-                                      child:
-                                          WithFriend(), // 또는 다른 원하는 위젯을 여기에 배치
-                                    );
-                                  },
-                                );
-                              },
-                              child: const Text(
-                                "취소",
-                                style: TextStyle(
-                                  color: Color.fromRGBO(14, 15, 14, 1),
-                                  fontFamily: 'SpoqaHanSansNeo-Medium',
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                      Text(
+                        '날짜',
+                        style: AppTextStyle.sub1,
                       ),
+                      const Spacer(),
                       SizedBox(
-                        width: 100,
-                        height: 34,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius:
-                                BorderRadius.circular(16), // BorderRadius 설정
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Color.fromRGBO(0, 0, 0, 0.15),
-                                offset: Offset(0, 1),
-                                blurRadius: 4,
-                                spreadRadius: 0,
-                              ),
-                            ],
-                          ),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  Color.fromRGBO(100, 215, 251, 1), // 배경 색상
-                            ),
-                            onPressed: () async {
-                              int randomRoomNumber =
-                                  Random().nextInt(9000) + 1000;
-                              String purpose = _purposeController.text;
+                        width: 150,
+                        height: 26,
+                        child: OutlinedButton(
+                          onPressed: () async {
+                            final selectedDates = await showModalBottomSheet(
+                              context: context,
+                              builder: (context) => const CustomCalendar(),
+                            );
 
-                              await FirebaseFirestore.instance
-                                  .collection('rooms')
-                                  .doc(randomRoomNumber.toString())
-                                  .set({
-                                'roomNumber': randomRoomNumber,
-                                'purpose':
-                                    purpose, // Add the purpose field here
+                            if (selectedDates != null) {
+                              setState(() {
+                                days = selectedDates;
                               });
-
-                              // ignore: use_build_context_synchronously
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return Dialog(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                          16), // 원하는 값으로 변경
-                                    ),
-                                    child: CreatedRoomPage(
-                                      roomNumber: randomRoomNumber,
-                                    ),
-                                  );
-                                },
-                              );
-                            },
-                            child: const Text(
-                              "완료",
-                              style: TextStyle(
-                                color: Color.fromRGBO(14, 15, 14, 1),
-                                fontFamily: 'SpoqaHanSansNeo-Medium',
-                                fontSize: 15,
-                              ),
-                            ),
-                          ),
+                            }
+                          }, // 탭 했을 때 캘린더로 선택되도록
+                          style: OutlinedButton.styleFrom(
+                              side: const BorderSide(
+                                  width: 1, color: AppColors.buttonStroke),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15))),
+                          child: Text(
+                              days.isEmpty
+                                  ? DateFormat('M월 d일 EEEE', 'ko_KR')
+                                      .format(DateTime.now())
+                                  : DateFormat('M월 d일 EEEE', 'ko_KR')
+                                      .format(days[0]),
+                              style: AppTextStyle.body3),
                         ),
-                      ),
+                      )
                     ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 10),
+                  const Divider(),
+                ],
+              ),
             ),
-          ],
-        ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Container(
+                width: width * 0.27,
+                height: 30,
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      blurRadius: 4,
+                      offset: const Offset(0, 1),
+                    )
+                  ],
+                ),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.button1,
+                  ),
+                  child: Text('취소', style: AppTextStyle.body3),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Container(
+                width: width * 0.27,
+                height: 30,
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      blurRadius: 4,
+                      offset: const Offset(0, 1),
+                    )
+                  ],
+                ),
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final habitName = _purposeController.text;
+                    final habitDates = days.map((day) {
+                      return DateFormat('yyyy-MM-dd').format(day);
+                    }).toList();
+                    // final habitDate = DateFormat('yyyy-MM-dd').format(today);
+
+                    await _addFriendHabits(habitName, habitDates);
+
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.button2,
+                  ),
+                  child: Text('완료', style: AppTextStyle.body3),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
+  }
+
+  Future _addFriendHabits(String habitName, List<String> habitDates) async {
+    for (int i = 0; i < habitDates.length; i++) {
+      DocumentReference docRef =
+          await FirebaseFirestore.instance.collection('habits').add(
+        {
+          'habitName': habitName,
+          'habitDate': habitDates[i],
+          'isDone': false,
+          'isAlert': false,
+          'isFriend': true,
+          'UID': user?.uid,
+        },
+      );
+      String habitId = docRef.id;
+      await FirebaseFirestore.instance.collection('habits').doc(habitId).update(
+        {'id': habitId},
+      );
+    }
+    _clearAll();
+  }
+
+  void _clearAll() {
+    _purposeController.text = '';
   }
 }
 
@@ -392,7 +406,6 @@ class _CreatedRoomPageState extends State<CreatedRoomPage> {
                           )),
                     ),
                   ),
-
                   SizedBox(
                     width: 100,
                     height: 34,
@@ -448,16 +461,6 @@ class _CreatedRoomPageState extends State<CreatedRoomPage> {
                       ),
                     ),
                   ),
-                  // if (_isValid)
-                  //   const Padding(
-                  //     padding: EdgeInsets.all(16.0),
-                  //     child: Text('입장 가능합니다.'),
-                  //   ),
-                  // if (!_isValid && _inputController.text.isNotEmpty)
-                  //   const Padding(
-                  //     padding: EdgeInsets.all(16.0),
-                  //     child: Text('입장 불가능합니다.'),
-                  //   ),
                 ],
               ),
             );
@@ -846,6 +849,7 @@ class _ParticipateRoom extends State<ParticipateRoom> {
                           ),
                           onPressed: () async {
                             if (user != null) {
+                              String userId;
                               String userNickname;
 
                               // 현재 사용자의 UID를 이용해 users 컬렉션에서 문서를 가져옴
@@ -857,12 +861,14 @@ class _ParticipateRoom extends State<ParticipateRoom> {
 
                               // 가져온 문서에서 'nickname' 필드 값을 가져옴
                               if (userSnapshot.exists) {
+                                userId = userSnapshot.get('userId');
                                 userNickname = userSnapshot.get('nickname');
                               } else {
-                                userNickname = 'Unknown';
+                                userId = 'Unknown';
+                                userNickname = 'Unknwon';
                               }
 
-                              participants.add(userNickname);
+                              participants.add(userId);
 
                               await FirebaseFirestore.instance
                                   .collection('rooms')

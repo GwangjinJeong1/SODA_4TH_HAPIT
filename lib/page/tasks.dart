@@ -151,9 +151,13 @@ class _TasksState extends State<Tasks> {
                           margin: const EdgeInsets.only(bottom: 10.0),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(36.0),
-                            color: data['isDone']
-                                ? AppColors.aloneOn
-                                : AppColors.aloneOff,
+                            color: data['isFriend']
+                                ? (data['isDone']
+                                    ? AppColors.friendOn
+                                    : AppColors.friendOff)
+                                : (data['isDone']
+                                    ? AppColors.aloneOn
+                                    : AppColors.aloneOff),
                             boxShadow: [
                               data['isDone']
                                   ? BoxShadow(

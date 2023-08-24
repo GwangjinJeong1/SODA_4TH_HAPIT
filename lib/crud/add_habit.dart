@@ -19,6 +19,8 @@ class _AddHabitState extends State<AddHabit> {
   DateTime today = DateTime.now();
   late bool _isAlert = false;
   final user = FirebaseAuth.instance.currentUser;
+  List<DateTime> days = [];
+
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
@@ -69,14 +71,14 @@ class _AddHabitState extends State<AddHabit> {
                         height: 26,
                         child: OutlinedButton(
                           onPressed: () async {
-                            final selectedDate = await showModalBottomSheet(
+                            final selectedDates = await showModalBottomSheet(
                               context: context,
                               builder: (context) => const CustomCalendar(),
                             );
 
-                            if (selectedDate != null) {
+                            if (selectedDates != null) {
                               setState(() {
-                                today = selectedDate;
+                                days = selectedDates;
                               });
                             }
                           }, // 탭 했을 때 캘린더로 선택되도록
@@ -86,7 +88,11 @@ class _AddHabitState extends State<AddHabit> {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15))),
                           child: Text(
-                              DateFormat('M월 d일 EEEE', 'ko_KR').format(today),
+                              days.isEmpty
+                                  ? DateFormat('M월 d일 EEEE', 'ko_KR')
+                                      .format(DateTime.now())
+                                  : DateFormat('M월 d일 EEEE', 'ko_KR')
+                                      .format(days[0]),
                               style: AppTextStyle.body3),
                         ),
                       )
@@ -168,9 +174,12 @@ class _AddHabitState extends State<AddHabit> {
                 child: ElevatedButton(
                   onPressed: () async {
                     final habitName = habitNameController.text;
-                    final habitDate = DateFormat('yyyy-MM-dd').format(today);
+                    final habitDates = days.map((day) {
+                      return DateFormat('yyyy-MM-dd').format(day);
+                    }).toList();
+                    // final habitDate = DateFormat('yyyy-MM-dd').format(today);
 
-                    await _addHabits(habitName, habitDate);
+                    await _addHabits(habitName, habitDates);
 
                     Navigator.of(context).pop();
                   },
@@ -187,21 +196,25 @@ class _AddHabitState extends State<AddHabit> {
     );
   }
 
-  Future _addHabits(String habitName, String habitDate) async {
-    DocumentReference docRef =
-        await FirebaseFirestore.instance.collection('habits').add(
-      {
-        'habitName': habitName,
-        'habitDate': habitDate,
-        'isDone': false,
-        'isAlert': false,
-        'UID': user?.uid,
-      },
-    );
-    String habitId = docRef.id;
-    await FirebaseFirestore.instance.collection('habits').doc(habitId).update(
-      {'id': habitId},
-    );
+  Future _addHabits(String habitName, List<String> habitDates) async {
+    for (int i = 0; i < habitDates.length; i++) {
+      DocumentReference docRef =
+          await FirebaseFirestore.instance.collection('habits').add(
+        {
+          'habitName': habitName,
+          'habitDate': habitDates[i],
+          'isDone': false,
+          'isAlert': false,
+          'isFriend': false,
+          'UID': user?.uid,
+        },
+      );
+      String habitId = docRef.id;
+      await FirebaseFirestore.instance.collection('habits').doc(habitId).update(
+        {'id': habitId},
+      );
+    }
+
     _clearAll();
   }
 

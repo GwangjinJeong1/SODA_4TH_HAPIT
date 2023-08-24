@@ -361,9 +361,21 @@ class AddListButton extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(
+          Container(
             width: 160,
             height: 70,
+            decoration: BoxDecoration(boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.20),
+                blurRadius: 6,
+                offset: Offset(0, 2),
+              ),
+              BoxShadow(
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 4,
+                offset: Offset(0, 1),
+              ),
+            ]),
             child: ElevatedButton(
                 onPressed: () {
                   showModalBottomSheet(
@@ -401,9 +413,21 @@ class AddListButton extends StatelessWidget {
                 )),
           ),
           const SizedBox(width: 11),
-          SizedBox(
+          Container(
             width: 160,
             height: 70,
+            decoration: BoxDecoration(boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.20),
+                blurRadius: 6,
+                offset: Offset(0, 2),
+              ),
+              BoxShadow(
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 4,
+                offset: Offset(0, 1),
+              ),
+            ]),
             child: ElevatedButton(
                 onPressed: () async {
                   await Future.delayed(const Duration(seconds: 0));
@@ -421,11 +445,11 @@ class AddListButton extends StatelessWidget {
                   });
                 },
                 style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.fromLTRB(19, 17, 34, 15),
-                    backgroundColor: AppColors.alonePlus,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    elevation: 7),
+                  padding: const EdgeInsets.fromLTRB(19, 17, 34, 15),
+                  backgroundColor: AppColors.alonePlus,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
                 child: Row(
                   children: [
                     SvgPicture.asset('public/images/alone.svg',

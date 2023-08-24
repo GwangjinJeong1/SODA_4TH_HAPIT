@@ -69,7 +69,5 @@ class _DeleteHabitState extends State<DeleteHabit> {
   Future _deleteHabits() async {
     var collection = FirebaseFirestore.instance.collection('habits');
     await collection.doc(widget.habitId).delete();
-
-    setState(() {});
   }
 }

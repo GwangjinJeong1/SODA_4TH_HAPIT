@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import '../components/textStyle.dart';
@@ -23,6 +24,7 @@ String formatDate(DateTime date) {
 }
 
 class _MonthPageState extends State<MonthPage> {
+  final user = FirebaseAuth.instance.currentUser;
   double _completionRate = 0;
   void _calculateCompletionRate() async {
     // 선택한 날짜의 연도와 월을 활용하여 시작일과 마지막일 계산
@@ -34,6 +36,7 @@ class _MonthPageState extends State<MonthPage> {
     // Firestore에서 선택한 달에 해당하는 데이터 가져오기
     QuerySnapshot snapshot = await fireStore
         .collection('habits')
+        .where('UID', isEqualTo: user?.uid)
         .where('habitDate', isGreaterThanOrEqualTo: formatDate(firstDayOfMonth))
         .where('habitDate',
             isLessThan: formatDate(lastDayOfMonth.add(const Duration(days: 1))))
@@ -91,7 +94,6 @@ class _MonthPageState extends State<MonthPage> {
                 size: 30,
               )),
         ),
-        //leadingWidth: 100,
         title: Padding(
           padding: const EdgeInsets.only(top: 20, bottom: 6),
           child: Text('월별 보기', style: AppTextStyle.bodyMedium),
@@ -163,6 +165,7 @@ class MonthCalendar extends StatefulWidget {
 
 class _MonthCalendarState extends State<MonthCalendar> {
   final fireStore = FirebaseFirestore.instance;
+  final user = FirebaseAuth.instance.currentUser;
   double _completionRate = 0;
 
   @override
@@ -175,6 +178,7 @@ class _MonthCalendarState extends State<MonthCalendar> {
   Future<double> calculateCompletionRateForDay(DateTime selectedDate) async {
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('habits')
+        .where('UID', isEqualTo: user?.uid)
         .where('habitDate', isEqualTo: formatDate(selectedDate))
         .get();
 
@@ -217,6 +221,7 @@ class _MonthCalendarState extends State<MonthCalendar> {
   void _calculateCompletionRate() async {
     QuerySnapshot snapshot = await FirebaseFirestore.instance
         .collection('habits')
+        .where('UID', isEqualTo: user?.uid)
         .where('habitDate', isGreaterThanOrEqualTo: _focusedDay)
         .where('habitDate',
             isLessThan: _focusedDay.add(const Duration(days: 30)))
@@ -417,6 +422,7 @@ class HabitCard extends StatefulWidget {
 }
 
 class _HabitCardState extends State<HabitCard> {
+  final user = FirebaseAuth.instance.currentUser;
   @override
   void initState() {
     super.initState();
@@ -467,6 +473,7 @@ class _HabitCardState extends State<HabitCard> {
             child: FutureBuilder<QuerySnapshot>(
               future: fireStore
                   .collection('habits')
+                  .where("UID", isEqualTo: user?.uid)
                   .where("habitDate",
                       isEqualTo:
                           DateFormat('yyyy-MM-dd').format(widget.selectedDay))

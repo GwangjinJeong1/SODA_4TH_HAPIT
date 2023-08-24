@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:soda_4th_hapit/page/calendar.dart';
 import 'package:intl/intl.dart';
@@ -17,7 +18,7 @@ class _AddHabitState extends State<AddHabit> {
   final TextEditingController habitNameController = TextEditingController();
   DateTime today = DateTime.now();
   late bool _isAlert = false;
-  //late DateTime _selectedDay;
+  final user = FirebaseAuth.instance.currentUser;
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
@@ -194,6 +195,7 @@ class _AddHabitState extends State<AddHabit> {
         'habitDate': habitDate,
         'isDone': false,
         'isAlert': false,
+        'UID': user?.uid,
       },
     );
     String habitId = docRef.id;

@@ -203,7 +203,7 @@ class _RoomPageState extends State<RoomPage> {
                                           fontWeight: FontWeight.w500),
                                     ),
                                     const SizedBox(height: 13),
-                                    Text("data")
+                                    const Text("data")
                                   ],
                                 ),
                               ],

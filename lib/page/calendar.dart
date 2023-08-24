@@ -312,6 +312,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
   // 주차 선택 메서드
   void selectDatesByWeek(int weekIndex) {
     _selectedDays.clear();
+
     DateTime startOfWeek =
         _focusedDay.subtract(Duration(days: _focusedDay.weekday - 1));
     DateTime firstDayOfNewWeek = startOfWeek.add(Duration(days: 7 * weekIndex));
@@ -324,6 +325,7 @@ class _CustomCalendarState extends State<CustomCalendar> {
         _selectedDays.add(currentDay);
       }
     }
+
     setState(() {});
   }
 
@@ -331,15 +333,36 @@ class _CustomCalendarState extends State<CustomCalendar> {
   void selectDatesByWeekday(int weekdayIndex) {
     DateTime firstVisibleDay =
         _focusedDay.subtract(Duration(days: _focusedDay.weekday - 1));
+
+    // 선택 가능한 날짜들을 저장할 리스트
+    List<DateTime> selectableDates = [];
+
     for (int i = weekdayIndex; i <= getDaysInMonth(_focusedDay.month); i += 7) {
       DateTime currentDay = firstVisibleDay.add(Duration(days: i - 1));
-      if (!_selectedDays.any((day) => isSameDay(currentDay, day))) {
-        _selectedDays.add(currentDay);
-      } else {
-        _selectedDays.removeWhere((day) => isSameDay(currentDay, day));
+      if ((currentDay.month == _focusedDay.month) &&
+          (currentDay.isAfter(DateTime.now()) ||
+              isSameDay(currentDay, DateTime.now()))) {
+        selectableDates.add(currentDay);
       }
     }
-    setState(() {});
+
+    // 선택한 날짜들이 이미 선택되어 있는지 확인하여 선택 또는 해제
+    bool allSelected = true;
+    for (DateTime date in selectableDates) {
+      if (!_selectedDays.any((day) => isSameDay(date, day))) {
+        allSelected = false;
+        break;
+      }
+    }
+
+    setState(() {
+      if (allSelected) {
+        _selectedDays.removeWhere(
+            (day) => selectableDates.any((date) => isSameDay(date, day)));
+      } else {
+        _selectedDays.addAll(selectableDates);
+      }
+    });
   }
 
   int getDaysInMonth(int month) {
@@ -365,132 +388,105 @@ class _CustomCalendarState extends State<CustomCalendar> {
 
   // 주차 선택 버튼
   Widget buildWeekArrowButtons() {
-    return SizedBox(
-      width: 35, // Set the width to determine the spacing from the left edge
-      height: 210,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: List.generate(5, (int index) {
-          return Container(
-            width: 30,
-            height: 30,
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
-                  blurRadius: 4.0,
-                  offset: const Offset(0, 1), // shadow direction: bottom right
+    return Column(
+      children: [
+        Column(
+          // mainAxisAlignment: MainAxisAlignment.spaceAround,
+          // crossAxisAlignment: CrossAxisAlignment.center,
+          children: List.generate(6, (int index) {
+            if (index == 0) {
+              return Container(
+                margin: const EdgeInsets.only(top: 1),
+                width: 30,
+                height: 30,
+              );
+            } else {
+              return Container(
+                margin: const EdgeInsets.only(top: 6.3),
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      blurRadius: 4.0,
+                      offset:
+                          const Offset(0, 1), // shadow direction: bottom right
+                    ),
+                  ],
+                  color: AppColors.background1,
+                  borderRadius: BorderRadius.circular(4),
                 ),
-              ],
-              color: AppColors.background1,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Center(
-              child: IconButton(
-                onPressed: () {
-                  selectDatesByWeek(index);
-                },
-                iconSize: 25,
-                padding: EdgeInsets.zero,
-                icon: const Icon(Icons.keyboard_arrow_right_rounded),
-                color: AppColors.buttonStroke,
-              ),
-            ),
-          );
-        }),
-      ),
+                child: Center(
+                  child: IconButton(
+                    onPressed: () {
+                      selectDatesByWeek(index);
+                    },
+                    iconSize: 25,
+                    padding: EdgeInsets.zero,
+                    icon: const Icon(Icons.keyboard_arrow_right_rounded),
+                    color: AppColors.buttonStroke,
+                  ),
+                ),
+              );
+            }
+          }),
+        ),
+      ],
     );
   }
 
   // 요일 선택 버튼
   Widget buildWeekdayButtons() {
     List<String> weekdays = ['일', '월', '화', '수', '목', '금', '토'];
-    String month = DateFormat('M월', 'ko_KR').format(_focusedDay);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    _focusedDay = DateTime(_focusedDay.year,
-                        _focusedDay.month - 1, _focusedDay.day);
-                  });
-                },
-                icon: const Icon(Icons.keyboard_arrow_left_rounded),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: weekdays.asMap().entries.map((entry) {
+          int index = entry.key;
+          String day = entry.value;
+          bool isSelected =
+              _selectedDays.any((selectedDay) => selectedDay.weekday == index);
+
+          return Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 4.0,
+                offset: const Offset(0, 1), // shadow direction: bottom right
               ),
-              //const SizedBox(width: 5),
-              Text(month, style: AppTextStyle.head3),
-              //const SizedBox(width: 5),
-
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    _focusedDay = DateTime(_focusedDay.year,
-                        _focusedDay.month + 1, _focusedDay.day);
-                  });
-                },
-                icon: const Icon(Icons.keyboard_arrow_right_rounded),
+            ]),
+            child: ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  if (isSelected) {
+                    _selectedDays.removeWhere(
+                        (selectedDay) => selectedDay.weekday == index);
+                  } else {
+                    selectDatesByWeekday(index);
+                  }
+                });
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isSelected
+                    ? AppColors.monthBlue2 // Selected color
+                    : AppColors.background1,
+                side: const BorderSide(color: Colors.transparent),
+                padding: EdgeInsets.zero, // Remove default padding
+                alignment: Alignment.center, // Center align content
               ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: weekdays.asMap().entries.map((entry) {
-              int index = entry.key;
-              String day = entry.value;
-              bool isSelected = _selectedDays
-                  .any((selectedDay) => selectedDay.weekday == index);
-
-              return Container(
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
-                    blurRadius: 4.0,
-                    offset:
-                        const Offset(0, 1), // shadow direction: bottom right
-                  ),
-                ]),
-                child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      if (isSelected) {
-                        _selectedDays.removeWhere(
-                            (selectedDay) => selectedDay.weekday == index);
-                      } else {
-                        selectDatesByWeekday(index);
-                      }
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isSelected
-                        ? AppColors.monthBlue2 // Selected color
-                        : AppColors.background1,
-                    side: const BorderSide(color: Colors.transparent),
-                    padding: EdgeInsets.zero, // Remove default padding
-                    alignment: Alignment.center, // Center align content
-                  ),
-                  child: Text(
-                    day,
-                    style: AppTextStyle.body3,
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-      ],
+              child: Text(
+                day,
+                style: AppTextStyle.body3,
+              ),
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 }

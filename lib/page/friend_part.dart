@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../components/colors.dart';
 import '../components/text_style.dart';
+import 'calendar.dart';
 
 class RoomPage extends StatefulWidget {
   final int roomNumber;
@@ -144,6 +145,7 @@ class _RoomPageState extends State<RoomPage> {
                   height: 70,
                   child: TextFormField(
                     controller: _motivationController,
+                    maxLength: 15,
                     decoration: InputDecoration(
                       hintText: roomData['motivation'] ?? "목표달성",
                       filled: true,
@@ -188,33 +190,63 @@ class _RoomPageState extends State<RoomPage> {
                           padding: const EdgeInsets.only(bottom: 30, left: 30),
                           child: Row(
                             children: [
-                              SvgPicture.asset('public/images/profile1.svg'),
+                              // SvgPicture.asset('public/images/profile1.svg'),
                               const SizedBox(width: 14), //거리 간격
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    participant,
-                                    style: const TextStyle(
-                                      color: Color.fromRGBO(14, 15, 14, 1),
-                                      fontFamily: 'SpoqaHanSansNeo-Regular',
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 13),
-                                  if (participant ==
-                                      participants[0]) // 첫 번째 인덱스인 경우 "방장" 표시
-                                    const Text(
-                                      '방장',
-                                      style: TextStyle(
-                                        color: Color.fromRGBO(153, 159, 155, 1),
-                                        fontFamily: 'SpoqaHanSansNeo-Regular',
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w500,
+                              FutureBuilder<DocumentSnapshot>(
+                                future: FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(participant)
+                                    .get(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return CircularProgressIndicator();
+                                  }
+
+                                  if (snapshot.hasError) {
+                                    return Text('오류가 발생했습니다.');
+                                  }
+
+                                  if (!snapshot.hasData ||
+                                      !snapshot.data!.exists) {
+                                    return Text('사용자 정보 없음');
+                                  }
+
+                                  var userNickname = snapshot.data!
+                                          .get('nickname') ??
+                                      "Unknown"; // Replace "Unknown" with a default value if needed
+
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        userNickname,
+                                        style: const TextStyle(
+                                          color: Color.fromRGBO(14, 15, 14, 1),
+                                          fontFamily: 'SpoqaHanSansNeo-Regular',
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
-                                    ),
-                                ],
+                                      const SizedBox(height: 13),
+                                      if (participant ==
+                                          participants[
+                                              0]) // 첫 번째 인덱스인 경우 "방장" 표시
+                                        const Text(
+                                          '방장',
+                                          style: TextStyle(
+                                            color: Color.fromRGBO(
+                                                153, 159, 155, 1),
+                                            fontFamily:
+                                                'SpoqaHanSansNeo-Regular',
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                    ],
+                                  );
+                                },
                               ),
                             ],
                           ),
@@ -251,7 +283,16 @@ class _RoomPageState extends State<RoomPage> {
                             backgroundColor:
                                 (const Color.fromRGBO(237, 237, 237, 1)),
                           ),
-                          onPressed: () {},
+                          onPressed: () async {
+                            await Future.delayed(
+                                const Duration(seconds: 0),
+                                () => showDialog(
+                                    context: context,
+                                    builder: (context) => DeleteFriendHabit(
+                                          roomNumber:
+                                              widget.roomNumber.toString(),
+                                        )));
+                          },
                           child: const Text(
                             "삭제하기",
                             style: TextStyle(
@@ -274,7 +315,16 @@ class _RoomPageState extends State<RoomPage> {
                           backgroundColor:
                               (const Color.fromRGBO(100, 215, 251, 1)),
                         ),
-                        onPressed: () {},
+                        onPressed: () async {
+                          final selectedDate = await showModalBottomSheet(
+                            context: context,
+                            builder: (context) => const CustomCalendar(),
+                          );
+
+                          if (selectedDate != null) {
+                            setState(() {});
+                          }
+                        },
                         child: const Text(
                           "수정하기",
                           style: TextStyle(
@@ -323,5 +373,77 @@ class _RoomPageState extends State<RoomPage> {
         onTap: _onItemTapped,
       ),
     );
+  }
+}
+
+class DeleteFriendHabit extends StatefulWidget {
+  final String roomNumber;
+  const DeleteFriendHabit({super.key, required this.roomNumber});
+
+  @override
+  State<DeleteFriendHabit> createState() => _DeleteFriendHabitState();
+}
+
+class _DeleteFriendHabitState extends State<DeleteFriendHabit> {
+  bool _isDeleting = false;
+  @override
+  Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    return AlertDialog(
+      scrollable: true,
+      title: SvgPicture.asset('public/images/warning.svg'),
+      content: SizedBox(
+        child: Form(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('정말 이 목록을 삭제하시겠어요?', style: AppTextStyle.sub1),
+              Text('삭제하면 친구들의 목록에서도 사라져요.', style: AppTextStyle.sub2),
+              const SizedBox(height: 15),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        SizedBox(
+          width: width * 0.27,
+          height: 30,
+          child: ElevatedButton(
+            onPressed: _isDeleting
+                ? null // Disable button while deleting
+                : () async {
+                    setState(() {
+                      _isDeleting = true; // Set to true to disable button
+                    });
+                    await _deleteFriendHabits();
+                    Navigator.of(context, rootNavigator: true).pop();
+                  },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.button1,
+            ),
+            child: Text('취소하기', style: AppTextStyle.body3),
+          ),
+        ),
+        SizedBox(
+          width: width * 0.27,
+          height: 30,
+          child: ElevatedButton(
+            onPressed: () async {
+              await _deleteFriendHabits(); // Await the asynchronous function
+              Navigator.of(context, rootNavigator: true).pop();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.button2,
+            ),
+            child: Text('삭제하기', style: AppTextStyle.body3),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future _deleteFriendHabits() async {
+    var collection = FirebaseFirestore.instance.collection('rooms');
+    await collection.doc(widget.roomNumber).delete();
   }
 }

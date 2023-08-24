@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../components/textStyle.dart';
+import '../components/text_style.dart';
 import 'dart:ui';
 import '../components/colors.dart';
 

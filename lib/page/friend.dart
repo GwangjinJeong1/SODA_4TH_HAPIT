@@ -46,7 +46,7 @@ class WithFriend extends StatelessWidget {
                     showModalBottomSheet(
                       context: context,
                       builder: (BuildContext context) {
-                        return CreateRoom(selectedDay: selectedDay);
+                        return CreateRoom();
                       },
                     );
                   },
@@ -117,8 +117,7 @@ class WithFriend extends StatelessWidget {
 //---------------------------------- 친구와 함께 방 생성하는 곳----------------------------
 
 class CreateRoom extends StatefulWidget {
-  final DateTime selectedDay;
-  const CreateRoom({super.key, required this.selectedDay});
+  const CreateRoom({super.key});
 
   @override
   State<CreateRoom> createState() => _CreateRoomState();
@@ -442,8 +441,9 @@ class _CreatedRoomPageState extends State<CreatedRoomPage> {
                           } else {
                             userNickname = 'Unknown';
                           }
-
-                          participants.add(userNickname);
+                          final String participant_uid =
+                              FirebaseAuth.instance.currentUser!.uid;
+                          participants.add(participant_uid);
 
                           await FirebaseFirestore.instance
                               .collection('rooms')

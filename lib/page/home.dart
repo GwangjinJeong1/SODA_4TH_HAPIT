@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../components/colors.dart';
 
 import 'tasks.dart';
-import '../components/textStyle.dart';
+import '../components/text_style.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

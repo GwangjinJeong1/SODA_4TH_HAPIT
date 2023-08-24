@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:soda_4th_hapit/page/calendar.dart';
 import 'package:intl/intl.dart';
 import '../components/colors.dart';
-import '../components/textStyle.dart';
+import '../components/text_style.dart';
 import './delete_habit.dart';
 import './set_time.dart';
 

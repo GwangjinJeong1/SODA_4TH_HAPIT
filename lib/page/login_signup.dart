@@ -143,7 +143,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 250),
+                  padding: const EdgeInsets.only(left: 20),
                   child: Row(
                     children: [
                       Checkbox(

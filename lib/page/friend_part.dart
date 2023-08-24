@@ -49,6 +49,13 @@ class _RoomPageState extends State<RoomPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          color: Colors.black,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         title: FutureBuilder<DocumentSnapshot>(
           future: FirebaseFirestore.instance
               .collection('rooms')
@@ -71,14 +78,7 @@ class _RoomPageState extends State<RoomPage> {
                 snapshot.data!.data() as Map<String, dynamic>;
             String purpose = roomData['purpose'] ?? '목표 없음';
 
-            return Text(
-              purpose,
-              style: const TextStyle(
-                  color: Color.fromRGBO(14, 15, 14, 1),
-                  fontFamily: 'SpoqaHanSansNeo-Regular',
-                  fontSize: 21,
-                  fontWeight: FontWeight.w500),
-            );
+            return Text(purpose, style: AppTextStyle.bodyMedium);
           },
         ),
         backgroundColor: const Color.fromRGBO(249, 249, 249, 1),
@@ -182,36 +182,44 @@ class _RoomPageState extends State<RoomPage> {
                 Padding(
                   padding: const EdgeInsets.only(right: 170),
                   child: Column(
-                    children: participants.map((participant) {
-                      return Column(
-                        children: [
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(bottom: 30, left: 30),
-                            child: Row(
-                              children: [
-                                SvgPicture.asset('public/images/profile1.svg'),
-                                const SizedBox(width: 14), //거리 간격
-                                Column(
-                                  children: [
-                                    Text(
-                                      participant,
-                                      style: const TextStyle(
-                                          color: Color.fromRGBO(14, 15, 14, 1),
-                                          fontFamily: 'SpoqaHanSansNeo-Regular',
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500),
+                    children: [
+                      for (String participant in participants)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 30, left: 30),
+                          child: Row(
+                            children: [
+                              SvgPicture.asset('public/images/profile1.svg'),
+                              const SizedBox(width: 14), //거리 간격
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    participant,
+                                    style: const TextStyle(
+                                      color: Color.fromRGBO(14, 15, 14, 1),
+                                      fontFamily: 'SpoqaHanSansNeo-Regular',
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500,
                                     ),
-                                    const SizedBox(height: 13),
-                                    Text("data")
-                                  ],
-                                ),
-                              ],
-                            ),
+                                  ),
+                                  const SizedBox(height: 13),
+                                  if (participant ==
+                                      participants[0]) // 첫 번째 인덱스인 경우 "방장" 표시
+                                    Text(
+                                      '방장',
+                                      style: TextStyle(
+                                        color: Color.fromRGBO(153, 159, 155, 1),
+                                        fontFamily: 'SpoqaHanSansNeo-Regular',
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
                           ),
-                        ],
-                      );
-                    }).toList(),
+                        ),
+                    ],
                   ),
                 ),
                 for (int i = participants.length; i < 4; i++)

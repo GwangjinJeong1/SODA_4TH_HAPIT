@@ -54,6 +54,11 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  void _onLogoutPressed() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => AuthPage()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -113,7 +118,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   padding: const EdgeInsets.only(left: 20),
                   child: Text('이메일'),
                 ),
-                Text('$email'),
+                Text(email),
                 SizedBox(
                   width: 100,
                   height: 34,
@@ -124,9 +129,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       backgroundColor: (const Color.fromRGBO(237, 237, 237, 1)),
                     ),
-                    onPressed: () {
-                      const AuthPage();
-                    },
+                    onPressed: _onLogoutPressed,
                     child: const Text(
                       "로그아웃",
                       style: TextStyle(

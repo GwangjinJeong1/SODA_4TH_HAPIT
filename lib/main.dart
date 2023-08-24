@@ -6,6 +6,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'page/home.dart';
 import 'page/friendPage.dart';
 import 'page/profile.dart';
+import 'package:soda_4th_hapit/page/login_signup.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,16 +23,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        routes: {
-          '/home': (context) => const HomePage(),
-          '/friend': (context) => const FriendPage(),
-          '/profile': (context) => const ProfilePage(),
-          '/login': (context) => const AuthPage(),
-        },
-        title: 'Flutter Demo',
-        theme: ThemeData(),
-        home: const HomePage());
+      theme: ThemeData(),
+      home: const AuthPage(),
+      debugShowCheckedModeBanner: false,
+      routes: {
+        '/home': (context) => const HomePage(),
+        '/friend': (context) => const FriendPage(),
+        '/profile': (context) => const ProfilePage(),
+      },
+    );
   }
 }
 
@@ -71,10 +71,14 @@ class _LoginAndSignUpState extends State<LoginAndSignUp> {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      home: HomePage(),
-    );
+    if (islogin) {
+      return LoginPage(
+        onPressed: togglePage,
+      );
+    } else {
+      return SignUP(
+        onPressed: togglePage,
+      );
+    }
   }
 }

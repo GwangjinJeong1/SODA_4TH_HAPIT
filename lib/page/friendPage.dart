@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import '../components/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class FriendPage extends StatefulWidget {
   const FriendPage({super.key});
@@ -12,29 +13,38 @@ class FriendPage extends StatefulWidget {
 
 class _FriendPageState extends State<FriendPage> {
   final int _selectedIndex = 0;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  String? _currentUserNickname; // To store the current user's nickname
+  String _currentUserId = "";
+  String _currentUserNickname = "";
 
   @override
   void initState() {
     super.initState();
-    _getCurrentUserNickname();
+    _getCurrentUser();
   }
 
-  Future<void> _getCurrentUserNickname() async {
-    final User? user = _auth.currentUser;
+  void _getCurrentUser() async {
+    final user = _auth.currentUser;
     if (user != null) {
       setState(() {
-        _currentUserNickname = user.displayName;
+        _currentUserId = user.uid;
       });
+
+      final userDoc =
+          await _firestore.collection('users').doc(_currentUserId).get();
+      if (userDoc.exists) {
+        setState(() {
+          _currentUserNickname = userDoc.data()?['nickname'] ?? "No Nickname";
+        });
+      }
     }
   }
 
   void _onItemTapped(int index) {
     if (_selectedIndex != index) {
-      Navigator.of(context, rootNavigator: true).pushNamed(_routeNames[index]);
+      Navigator.pushNamed(context, _routeNames[index]);
     }
   }
 
@@ -47,7 +57,51 @@ class _FriendPageState extends State<FriendPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _buildFriendPageBody(),
+      appBar: AppBar(
+        title: Text("$_currentUserNickname 님의 친구 페이지"),
+        backgroundColor: Colors.black,
+      ),
+      body: FutureBuilder<List<String>>(
+        future: _getRoomsWithUser(_currentUserId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return const Center(child: Text('Error'));
+          }
+
+          final List<String> roomsWithUser = snapshot.data ?? [];
+
+          return ListView.builder(
+            itemCount: roomsWithUser.length,
+            itemBuilder: (context, index) {
+              final roomNumber = roomsWithUser[index];
+              return FutureBuilder<DocumentSnapshot>(
+                future: _firestore.collection('rooms').doc(roomNumber).get(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
+
+                  if (snapshot.hasError) {
+                    return const Text('Error');
+                  }
+
+                  final roomData =
+                      snapshot.data!.data() as Map<String, dynamic>;
+                  final purpose = roomData['purpose'] ?? 'No Purpose';
+
+                  return ListTile(
+                    title: Text('Room Purpose: $purpose'),
+                  );
+                },
+              );
+            },
+          );
+        },
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
@@ -63,44 +117,28 @@ class _FriendPageState extends State<FriendPage> {
               activeIcon: SvgPicture.asset('public/images/profile_on.svg'),
               label: ''),
         ],
+        fixedColor: AppColors.buttonStroke,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
     );
   }
 
-  Widget _buildFriendPageBody() {
-    if (_currentUserNickname != null) {
-      return StreamBuilder<QuerySnapshot>(
-        stream: _firestore.collection('rooms').snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
+  Future<List<String>> _getRoomsWithUser(String userNickname) async {
+    final QuerySnapshot roomsSnapshot =
+        await _firestore.collection('rooms').get();
 
-          final List<QueryDocumentSnapshot> rooms = snapshot.data!.docs;
+    final List<String> roomNumbers = [];
 
-          return ListView.builder(
-            itemCount: rooms.length,
-            itemBuilder: (context, index) {
-              final roomData = rooms[index].data() as Map<String, dynamic>;
-              final participants = roomData['participants'] ?? [];
+    for (final roomDoc in roomsSnapshot.docs) {
+      final roomData = roomDoc.data() as Map<String, dynamic>;
+      final participants = roomData['participants'] ?? [];
 
-              if (participants.contains(_currentUserNickname)) {
-                final String purpose = roomData['purpose'] ?? 'No Purpose';
-
-                return ListTile(
-                  title: Text('Room Purpose: $purpose'),
-                );
-              } else {
-                return Container(); // Return an empty container if the user's nickname is not in participants
-              }
-            },
-          );
-        },
-      );
-    } else {
-      return const Center(child: CircularProgressIndicator());
+      if (participants.contains(userNickname)) {
+        roomNumbers.add(roomDoc.id);
+      }
     }
+
+    return roomNumbers;
   }
 }

@@ -5,6 +5,8 @@ import 'dart:math';
 import 'package:flutter_svg/flutter_svg.dart';
 import './calendar.dart';
 import './friend_part.dart';
+import '../components/textStyle.dart';
+import '../components/colors.dart';
 
 class WithFriend extends StatelessWidget {
   const WithFriend({super.key});
@@ -18,28 +20,43 @@ class WithFriend extends StatelessWidget {
             SizedBox(
               width: 219,
               height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16), // BorderRadius 설정
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color.fromRGBO(0, 0, 0, 0.15),
+                      offset: Offset(0, 1),
+                      blurRadius: 4,
+                      spreadRadius: 0,
+                    ),
+                  ],
+                ),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromRGBO(133, 232, 173, 1),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
-                    )),
-                onPressed: () {
-                  showModalBottomSheet(
-                    isScrollControlled: true,
-                    context: context,
-                    builder: (BuildContext context) {
-                      return const SizedBox(height: 500, child: CreateRoom());
-                    },
-                  );
-                },
-                child: const Text(
-                  "습관 만들기",
-                  style: TextStyle(
+                    ),
+                  ),
+                  onPressed: () {
+                    showModalBottomSheet(
+                      isScrollControlled: true,
+                      context: context,
+                      builder: (BuildContext context) {
+                        return const SizedBox(height: 450, child: CreateRoom());
+                      },
+                    );
+                  },
+                  child: const Text(
+                    "습관 만들기",
+                    style: TextStyle(
                       color: Color.fromRGBO(14, 15, 14, 1),
                       fontFamily: 'SpoqaHanSansNeo-Medium',
                       fontSize: 17,
-                      fontWeight: FontWeight.w500),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -48,29 +65,42 @@ class WithFriend extends StatelessWidget {
               child: SizedBox(
                 width: 219,
                 height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromRGBO(237, 237, 237, 1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      )),
-                  onPressed: () {
-                    showModalBottomSheet(
-                      isScrollControlled: true,
-                      context: context,
-                      builder: (BuildContext context) {
-                        return const SizedBox(
-                            height: 500, child: JoinRoomPage());
-                      },
-                    );
-                  },
-                  child: const Text(
-                    "참여하기",
-                    style: TextStyle(
-                        color: Color.fromRGBO(14, 15, 14, 1),
-                        fontFamily: 'SpoqaHanSansNeo-Medium',
-                        fontSize: 17,
-                        fontWeight: FontWeight.w500),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16), // BorderRadius 설정
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.15),
+                        offset: Offset(0, 1),
+                        blurRadius: 4,
+                        spreadRadius: 0,
+                      ),
+                    ],
+                  ),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(237, 237, 237, 1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        )),
+                    onPressed: () {
+                      showModalBottomSheet(
+                        isScrollControlled: true,
+                        context: context,
+                        builder: (BuildContext context) {
+                          return const SizedBox(
+                              height: 450, child: JoinRoomPage());
+                        },
+                      );
+                    },
+                    child: const Text(
+                      "참여하기",
+                      style: TextStyle(
+                          color: Color.fromRGBO(14, 15, 14, 1),
+                          fontFamily: 'SpoqaHanSansNeo-Medium',
+                          fontSize: 17,
+                          fontWeight: FontWeight.w500),
+                    ),
                   ),
                 ),
               ),
@@ -107,7 +137,7 @@ class _CreateRoomState extends State<CreateRoom> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.only(right: 250, top: 20, bottom: 20),
+              padding: const EdgeInsets.only(right: 100, top: 20, bottom: 20),
               child: SizedBox(
                 width: 220,
                 child: TextFormField(
@@ -135,7 +165,7 @@ class _CreateRoomState extends State<CreateRoom> {
               children: [
                 const WithCalendar(),
                 Padding(
-                  padding: const EdgeInsets.only(top: 330, left: 270),
+                  padding: const EdgeInsets.only(top: 300, left: 150),
                   child: Row(
                     children: [
                       Padding(
@@ -143,32 +173,47 @@ class _CreateRoomState extends State<CreateRoom> {
                         child: SizedBox(
                           width: 100,
                           height: 34,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              backgroundColor:
-                                  (const Color.fromRGBO(237, 237, 237, 1)),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.circular(16), // BorderRadius 설정
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Color.fromRGBO(0, 0, 0, 0.15),
+                                  offset: Offset(0, 1),
+                                  blurRadius: 4,
+                                  spreadRadius: 0,
+                                ),
+                              ],
                             ),
-                            onPressed: () {
-                              showModalBottomSheet<void>(
-                                isScrollControlled: true,
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return const SizedBox(
-                                    height: 500, // 계산한 높이를 설정
-                                    child: WithFriend(), // 또는 다른 원하는 위젯을 여기에 배치
-                                  );
-                                },
-                              );
-                            },
-                            child: const Text(
-                              "취소",
-                              style: TextStyle(
-                                color: Color.fromRGBO(14, 15, 14, 1),
-                                fontFamily: 'SpoqaHanSansNeo-Medium',
-                                fontSize: 15,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                backgroundColor:
+                                    (const Color.fromRGBO(237, 237, 237, 1)),
+                              ),
+                              onPressed: () {
+                                showModalBottomSheet<void>(
+                                  isScrollControlled: true,
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return const SizedBox(
+                                      height: 450, // 계산한 높이를 설정
+                                      child:
+                                          WithFriend(), // 또는 다른 원하는 위젯을 여기에 배치
+                                    );
+                                  },
+                                );
+                              },
+                              child: const Text(
+                                "취소",
+                                style: TextStyle(
+                                  color: Color.fromRGBO(14, 15, 14, 1),
+                                  fontFamily: 'SpoqaHanSansNeo-Medium',
+                                  fontSize: 15,
+                                ),
                               ),
                             ),
                           ),
@@ -177,52 +222,61 @@ class _CreateRoomState extends State<CreateRoom> {
                       SizedBox(
                         width: 100,
                         height: 34,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            backgroundColor:
-                                (const Color.fromRGBO(100, 215, 251, 1)),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(16), // BorderRadius 설정
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color.fromRGBO(0, 0, 0, 0.15),
+                                offset: Offset(0, 1),
+                                blurRadius: 4,
+                                spreadRadius: 0,
+                              ),
+                            ],
                           ),
-                          onPressed: () async {
-                            int randomRoomNumber =
-                                Random().nextInt(9000) + 1000;
-                            String purpose = _purposeController.text;
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  Color.fromRGBO(100, 215, 251, 1), // 배경 색상
+                            ),
+                            onPressed: () async {
+                              int randomRoomNumber =
+                                  Random().nextInt(9000) + 1000;
+                              String purpose = _purposeController.text;
 
-                            await FirebaseFirestore.instance
-                                .collection('rooms')
-                                .doc(randomRoomNumber.toString())
-                                .set({
-                              'roomNumber': randomRoomNumber,
-                              'purpose': purpose, // Add the purpose field here
-                            });
+                              await FirebaseFirestore.instance
+                                  .collection('rooms')
+                                  .doc(randomRoomNumber.toString())
+                                  .set({
+                                'roomNumber': randomRoomNumber,
+                                'purpose':
+                                    purpose, // Add the purpose field here
+                              });
 
-                            // ignore: use_build_context_synchronously
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return Dialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(16),
+                              // ignore: use_build_context_synchronously
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return Dialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                          16), // 원하는 값으로 변경
                                     ),
                                     child: CreatedRoomPage(
-                                        roomNumber: randomRoomNumber),
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                          child: const Text(
-                            "완료",
-                            style: TextStyle(
-                              color: Color.fromRGBO(14, 15, 14, 1),
-                              fontFamily: 'SpoqaHanSansNeo-Medium',
-                              fontSize: 15,
+                                      roomNumber: randomRoomNumber,
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                            child: const Text(
+                              "완료",
+                              style: TextStyle(
+                                color: Color.fromRGBO(14, 15, 14, 1),
+                                fontFamily: 'SpoqaHanSansNeo-Medium',
+                                fontSize: 15,
+                              ),
                             ),
                           ),
                         ),
@@ -527,29 +581,42 @@ class _JoinRoomPageState extends State<JoinRoomPage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 15),
+              padding: const EdgeInsets.only(top: 10, bottom: 30),
               child: SizedBox(
                 width: 219,
                 height: 50,
-                child: TextField(
-                  controller: _inputController,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: const Color.fromRGBO(214, 220, 220, 1),
-                    border: OutlineInputBorder(
-                      borderSide: const BorderSide(
-                          color: Color.fromRGBO(214, 220, 220, 1)),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(
-                          color: Color.fromRGBO(214, 220, 220, 1)),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(
-                          color: Color.fromRGBO(214, 220, 220, 1)),
-                      borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16), // BorderRadius 설정
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.15),
+                        offset: Offset(0, 1),
+                        blurRadius: 4,
+                        spreadRadius: 0,
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    controller: _inputController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: const Color.fromRGBO(214, 220, 220, 1),
+                      border: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                            color: Color.fromRGBO(214, 220, 220, 1)),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                            color: Color.fromRGBO(214, 220, 220, 1)),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                            color: Color.fromRGBO(214, 220, 220, 1)),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
                   ),
                 ),
@@ -560,25 +627,39 @@ class _JoinRoomPageState extends State<JoinRoomPage> {
               child: Row(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(right: 10, left: 250),
+                    padding: const EdgeInsets.only(right: 10, left: 150),
                     child: SizedBox(
                       width: 100,
                       height: 34,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          backgroundColor:
-                              (const Color.fromRGBO(237, 237, 237, 1)),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(16), // BorderRadius 설정
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color.fromRGBO(0, 0, 0, 0.15),
+                              offset: Offset(0, 1),
+                              blurRadius: 4,
+                              spreadRadius: 0,
+                            ),
+                          ],
                         ),
-                        onPressed: () {},
-                        child: const Text(
-                          '취소',
-                          style: TextStyle(
-                            color: Color.fromRGBO(14, 15, 14, 1),
-                            fontFamily: 'SpoqaHanSansNeo-Medium',
-                            fontSize: 15,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            backgroundColor:
+                                (const Color.fromRGBO(237, 237, 237, 1)),
+                          ),
+                          onPressed: () {},
+                          child: const Text(
+                            '취소',
+                            style: TextStyle(
+                              color: Color.fromRGBO(14, 15, 14, 1),
+                              fontFamily: 'SpoqaHanSansNeo-Medium',
+                              fontSize: 15,
+                            ),
                           ),
                         ),
                       ),
@@ -587,25 +668,39 @@ class _JoinRoomPageState extends State<JoinRoomPage> {
                   SizedBox(
                     width: 100,
                     height: 34,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        backgroundColor:
-                            (const Color.fromRGBO(100, 215, 251, 1)),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            BorderRadius.circular(16), // BorderRadius 설정
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color.fromRGBO(0, 0, 0, 0.15),
+                            offset: Offset(0, 1),
+                            blurRadius: 4,
+                            spreadRadius: 0,
+                          ),
+                        ],
                       ),
-                      onPressed: _isLoading ? null : _checkRoomAndJoin,
-                      child: _isLoading
-                          ? const CircularProgressIndicator()
-                          : const Text(
-                              '완료',
-                              style: TextStyle(
-                                color: Color.fromRGBO(14, 15, 14, 1),
-                                fontFamily: 'SpoqaHanSansNeo-Medium',
-                                fontSize: 15,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          backgroundColor:
+                              (const Color.fromRGBO(100, 215, 251, 1)),
+                        ),
+                        onPressed: _isLoading ? null : _checkRoomAndJoin,
+                        child: _isLoading
+                            ? const CircularProgressIndicator()
+                            : const Text(
+                                '완료',
+                                style: TextStyle(
+                                  color: Color.fromRGBO(14, 15, 14, 1),
+                                  fontFamily: 'SpoqaHanSansNeo-Medium',
+                                  fontSize: 15,
+                                ),
                               ),
-                            ),
+                      ),
                     ),
                   ),
                 ],
@@ -695,68 +790,103 @@ class _ParticipateRoom extends State<ParticipateRoom> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SvgPicture.asset('public/images/friend_off.svg'),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 13, bottom: 13),
-                    child: Text('목록확인'),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 13, bottom: 13),
+                    child: Text('목록확인', style: AppTextStyle.sub1),
                   ),
-                  Text(purpose), // purpose를 출력하는 부분
+                  Text(purpose, style: AppTextStyle.sub2), // purpose를 출력하는 부분
                   Padding(
                     padding: const EdgeInsets.only(top: 13, bottom: 13),
                     child: Container(
-                      color: const Color.fromRGBO(225, 251, 255, 1),
-                      child: SizedBox(
-                          width: 108,
-                          height: 34,
-                          child: Center(
-                            child: Text('방장: $ownerName',
-                                textAlign: TextAlign.center),
-                          )),
+                      width: 108,
+                      height: 34,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color.fromRGBO(0, 0, 0, 0.15),
+                            offset: Offset(0, 1),
+                            blurRadius: 4,
+                            spreadRadius: 0,
+                          ),
+                        ],
+                        color:
+                            const Color.fromRGBO(225, 251, 255, 1), // 원하는 배경 색상
+                      ),
+                      child: Center(
+                        child: Text(
+                          '방장: $ownerName',
+                          textAlign: TextAlign.center,
+                          style: AppTextStyle.body3,
+                        ),
+                      ),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      if (user != null) {
-                        String userNickname;
-
-                        // 현재 사용자의 UID를 이용해 users 컬렉션에서 문서를 가져옴
-                        DocumentSnapshot userSnapshot = await FirebaseFirestore
-                            .instance
-                            .collection('users')
-                            .doc(user.uid)
-                            .get();
-
-                        // 가져온 문서에서 'nickname' 필드 값을 가져옴
-                        if (userSnapshot.exists) {
-                          userNickname = userSnapshot.get('nickname');
-                        } else {
-                          userNickname = 'Unknown';
-                        }
-
-                        participants.add(userNickname);
-
-                        await FirebaseFirestore.instance
-                            .collection('rooms')
-                            .doc(widget.roomNumber.toString())
-                            .update({
-                          'participants': participants,
-                        });
-
-                        // ignore: use_build_context_synchronously
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => RoomPage(
-                                roomNumber: widget.roomNumber,
-                                nickname: userNickname), // 여기서 nickname 전달
-                          ),
-                        );
-                      }
-                    },
-                    child: const SizedBox(
+                  SizedBox(
+                    child: Container(
                       width: 100,
                       height: 34,
-                      child: Center(
-                        child: Text('확인', textAlign: TextAlign.center),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(4), // BorderRadius 설정
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color.fromRGBO(0, 0, 0, 0.15),
+                              offset: Offset(0, 1),
+                              blurRadius: 4,
+                              spreadRadius: 0,
+                            ),
+                          ],
+                        ),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.button2, // 원하는 색상으로 변경
+                            // 나머지 스타일 속성들...
+                          ),
+                          onPressed: () async {
+                            if (user != null) {
+                              String userNickname;
+
+                              // 현재 사용자의 UID를 이용해 users 컬렉션에서 문서를 가져옴
+                              DocumentSnapshot userSnapshot =
+                                  await FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(user.uid)
+                                      .get();
+
+                              // 가져온 문서에서 'nickname' 필드 값을 가져옴
+                              if (userSnapshot.exists) {
+                                userNickname = userSnapshot.get('nickname');
+                              } else {
+                                userNickname = 'Unknown';
+                              }
+
+                              participants.add(userNickname);
+
+                              await FirebaseFirestore.instance
+                                  .collection('rooms')
+                                  .doc(widget.roomNumber.toString())
+                                  .update({
+                                'participants': participants,
+                              });
+
+                              // ignore: use_build_context_synchronously
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => RoomPage(
+                                      roomNumber: widget.roomNumber,
+                                      nickname:
+                                          userNickname), // 여기서 nickname 전달
+                                ),
+                              );
+                            }
+                          },
+                          child: Text('확인',
+                              textAlign: TextAlign.center,
+                              style: AppTextStyle.body3),
+                        ),
                       ),
                     ),
                   ),

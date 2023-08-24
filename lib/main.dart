@@ -23,15 +23,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(),
-      home: const AuthPage(),
-      debugShowCheckedModeBanner: false,
-      routes: {
-        '/home': (context) => const HomePage(),
-        '/friend': (context) => const FriendPage(),
-        '/profile': (context) => const ProfilePage(),
-      },
-    );
+        debugShowCheckedModeBanner: false,
+        routes: {
+          '/home': (context) => const HomePage(),
+          '/friend': (context) => const FriendPage(),
+          '/profile': (context) => const ProfilePage(),
+          '/login': (context) => const AuthPage(),
+        },
+        title: 'Flutter Demo',
+        theme: ThemeData(),
+        home: const AuthPage());
   }
 }
 
@@ -72,13 +73,9 @@ class _LoginAndSignUpState extends State<LoginAndSignUp> {
   @override
   Widget build(BuildContext context) {
     if (islogin) {
-      return LoginPage(
-        onPressed: togglePage,
-      );
+      return LoginPage(onPressed: togglePage);
     } else {
-      return SignUP(
-        onPressed: togglePage,
-      );
+      return SignUP(onPressed: togglePage);
     }
   }
 }

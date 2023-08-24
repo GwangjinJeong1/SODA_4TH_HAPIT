@@ -4,20 +4,21 @@ import '../components/colors.dart';
 import '../components/textStyle.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'editProfile.dart';
-import 'package:soda_4th_hapit/main.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+class EditProfilePage extends StatefulWidget {
+  const EditProfilePage({super.key});
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<EditProfilePage> createState() => _EditProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _EditProfilePageState extends State<EditProfilePage> {
   final int _selectedIndex = 2;
   late String nickname = '';
   late String email = '';
+  bool _isGreen = false;
+  final fireStore = FirebaseFirestore.instance;
+  final TextEditingController nicknameController = TextEditingController();
 
   void _onItemTapped(int index) {
     if (_selectedIndex != index) {
@@ -37,13 +38,13 @@ class _ProfilePageState extends State<ProfilePage> {
     fetchUserProfile();
   }
 
+  final user = FirebaseAuth.instance.currentUser;
   Future<void> fetchUserProfile() async {
     try {
-      final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
         final userDoc = await FirebaseFirestore.instance
             .collection('users')
-            .doc(user.uid)
+            .doc(user?.uid)
             .get();
 
         setState(() {
@@ -56,9 +57,30 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  void _onLogoutPressed() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => AuthPage()));
+  void updateNickname(String newNickname) async {
+    if (user != null) {
+      try {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user?.uid)
+            .update({'nickname': newNickname});
+
+        setState(() {
+          nickname = newNickname; // Update the local state with new nickname
+        });
+
+        // Optional: Show a success message or perform other actions
+      } catch (error) {
+        print('Error updating nickname: $error');
+        // Handle error if needed
+      }
+    }
+  }
+
+  void toggleImageColor() {
+    setState(() {
+      _isGreen = !_isGreen;
+    });
   }
 
   @override
@@ -79,40 +101,27 @@ class _ProfilePageState extends State<ProfilePage> {
         backgroundColor: AppColors.background1,
         shadowColor: Colors.black.withOpacity(0.2),
         elevation: 10,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(top: 24, right: 20, bottom: 10),
-            child: TextButton(
-              onPressed: () async {
-                await Future.delayed(
-                    const Duration(seconds: 0),
-                    () => showDialog(
-                        context: context,
-                        builder: (context) => const DeleteAlert()));
-              },
-              child: const Text("로그아웃",
-                  style: TextStyle(
-                      fontFamily: 'SpoqaHanSansNeo-Regular',
-                      fontSize: 15,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.bodyText1)),
-            ),
-          ),
-        ],
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const SizedBox(height: 30),
-            SvgPicture.asset('public/images/profile.svg'),
-            const SizedBox(height: 54),
+            Image.asset(_isGreen
+                ? 'public/images/character2.png'
+                : 'public/images/character1.png'),
+            const SizedBox(height: 12),
+            TextButton(
+                onPressed: () {
+                  toggleImageColor();
+                },
+                child: Text('사진 바꾸기', style: AppTextStyle.body3)),
+            const SizedBox(height: 23),
             const Divider(
               indent: 20,
               endIndent: 20,
               color: AppColors.divider,
             ),
-            const SizedBox(height: 10),
             Row(
               children: [
                 const Padding(
@@ -124,11 +133,31 @@ class _ProfilePageState extends State<ProfilePage> {
                           fontWeight: FontWeight.w400,
                           color: AppColors.bodyText2)),
                 ),
-                const SizedBox(width: 34),
-                Text(nickname, style: AppTextStyle.sub5),
+                const SizedBox(width: 25),
+                SizedBox(
+                  width: 200,
+                  height: 50,
+                  child: TextFormField(
+                    controller: nicknameController,
+                    style: AppTextStyle.sub5,
+                    cursorColor: AppColors.buttonStroke,
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 0),
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      hintText: nickname,
+                      hintStyle: AppTextStyle.sub5,
+                    ),
+                    onChanged: (newNickname) {
+                      setState(() {
+                        nickname = newNickname;
+                      });
+                    },
+                  ),
+                ),
               ],
             ),
-            const SizedBox(height: 10),
             const Divider(
               indent: 20,
               endIndent: 20,
@@ -147,7 +176,12 @@ class _ProfilePageState extends State<ProfilePage> {
                           color: AppColors.bodyText2)),
                 ),
                 const SizedBox(width: 34),
-                Text(email, style: AppTextStyle.sub5),
+                Text(email,
+                    style: const TextStyle(
+                        fontFamily: 'SpoqaHanSansNeo-Regular',
+                        fontSize: 17,
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.bodyText2)),
               ],
             ),
             const SizedBox(height: 10),
@@ -157,20 +191,28 @@ class _ProfilePageState extends State<ProfilePage> {
               color: AppColors.divider,
             ),
             const SizedBox(height: 25),
-            TextButton(
-                onPressed: () async {
-                  final updateNickname = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const EditProfilePage()),
-                  );
-                  if (updateNickname != null) {
-                    setState(() {
-                      nickname = updateNickname;
-                    });
-                  }
-                },
-                child: Text('프로필 편집', style: AppTextStyle.body3)),
+            Container(
+              width: 100,
+              height: 34,
+              decoration: BoxDecoration(boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: 4,
+                  offset: const Offset(0, 1),
+                )
+              ]),
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.button2,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4))),
+                  onPressed: () {
+                    updateNickname(nicknameController.text);
+
+                    Navigator.pop(context, nicknameController.text);
+                  },
+                  child: Center(child: Text('완료', style: AppTextStyle.body3))),
+            ),
           ],
         ),
       ),
@@ -193,69 +235,6 @@ class _ProfilePageState extends State<ProfilePage> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
-    );
-  }
-}
-
-class DeleteAlert extends StatefulWidget {
-  const DeleteAlert({super.key});
-
-  @override
-  State<DeleteAlert> createState() => _DeleteAlertState();
-}
-
-class _DeleteAlertState extends State<DeleteAlert> {
-  final user = FirebaseAuth.instance;
-  void signOut() async {
-    await user.signOut();
-    Navigator.pushNamedAndRemoveUntil(
-        context, '/login', (Route<dynamic> route) => false);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-    return AlertDialog(
-      scrollable: true,
-      title: Image.asset('public/images/logout.png', width: 45, height: 50),
-      content: Container(
-        margin: const EdgeInsets.only(bottom: 0),
-        child: Text(
-          '정말 로그아웃 하시겠습니까?',
-          style: AppTextStyle.sub1,
-          textAlign: TextAlign.center,
-        ),
-      ),
-      actionsAlignment: MainAxisAlignment.center,
-      actions: [
-        Container(
-          margin: const EdgeInsets.only(top: 0, bottom: 20),
-          width: width * 0.27,
-          height: 30,
-          child: ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.button1,
-            ),
-            child: Text('취소하기', style: AppTextStyle.body3),
-          ),
-        ),
-        Container(
-            margin: const EdgeInsets.only(top: 0, bottom: 20),
-            width: width * 0.27,
-            height: 30,
-            child: ElevatedButton(
-              onPressed: () {
-                signOut();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.button2,
-              ),
-              child: Text('로그아웃', style: AppTextStyle.body3),
-            ))
-      ],
     );
   }
 }

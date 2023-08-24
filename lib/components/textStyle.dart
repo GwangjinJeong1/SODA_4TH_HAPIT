@@ -58,4 +58,9 @@ class AppTextStyle {
       fontSize: 13,
       fontWeight: FontWeight.w400,
       color: Color(0xff0E0F0E));
+  static TextStyle? sub5 = const TextStyle(
+      fontFamily: 'SpoqaHanSansNeo-Regular',
+      fontSize: 17,
+      fontWeight: FontWeight.w400,
+      color: Color(0xff0E0F0E));
 }

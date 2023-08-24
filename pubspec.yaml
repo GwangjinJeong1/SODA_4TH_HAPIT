@@ -86,6 +86,10 @@ flutter:
     - public/images/HAPIT_logo.svg
     - public/images/char.svg
     - public/images/celeb.svg
+    - public/images/profile.svg
+
+
+    
     
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -113,13 +117,14 @@ flutter:
   fonts: 
     - family: SpoqaHanSansNeo-Bold
       fonts:
-        - asset: assets/fonts/SpoqaHanSansNeo-Bold.ttf
+        - asset: assets/fonts/SpoqaHanSansNeo-Bold.otf
     - family: SpoqaHanSansNeo-Medium
       fonts:
-        - asset: assets/fonts/SpoqaHanSansNeo-Medium.ttf
+        - asset: assets/fonts/SpoqaHanSansNeo-Medium.otf
     - family: SpoqaHanSansNeo-Regular
       fonts:
-        - asset: assets/fonts/SpoqaHanSansNeo-Regular.ttf
+        - asset: assets/fonts/SpoqaHanSansNeo-Regular.otf
+        
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

@@ -5,6 +5,7 @@ import '../components/colors.dart';
 
 import 'tasks.dart';
 import '../components/textStyle.dart';
+import 'package:soda_4th_hapit/page/profile.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _widgetOptions = <Widget>[
     const Center(child: Text('Friend')),
     const Tasks(),
-    const Center(child: Text('Profile')),
+    const Profile(),
   ];
 
   final fireStore = FirebaseFirestore.instance;

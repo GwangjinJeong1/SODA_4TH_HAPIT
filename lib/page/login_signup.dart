@@ -16,6 +16,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
+  bool isChecked = false;
 
   bool isLoading = false;
 
@@ -38,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
       // 로그인 성공 시에 SignPage로 이동
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
       );
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -69,11 +70,10 @@ class _LoginPageState extends State<LoginPage> {
           child: Form(
             key: _formKey,
             child: Column(
-              // Column을 사용하여 세로로 배치
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.only(bottom: 50),
                   child: SvgPicture.asset('public/images/logo.svg'),
                 ),
                 SizedBox(
@@ -89,17 +89,26 @@ class _LoginPageState extends State<LoginPage> {
                     decoration: InputDecoration(
                       labelText: "이메일",
                       border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
+                        borderSide: const BorderSide(color: Colors.blue),
                         borderRadius: BorderRadius.circular(26),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
+                        borderSide: const BorderSide(
+                            color: Color.fromRGBO(14, 15, 14, 1)),
                         borderRadius: BorderRadius.circular(26),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                            color: Color.fromRGBO(14, 15, 14, 1)),
+                        borderRadius: BorderRadius.circular(26),
+                      ),
+                      labelStyle: const TextStyle(
+                        color: Color.fromRGBO(153, 159, 155, 1),
                       ),
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 SizedBox(
@@ -115,22 +124,60 @@ class _LoginPageState extends State<LoginPage> {
                     decoration: InputDecoration(
                       labelText: "비밀번호",
                       border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
+                        borderSide: const BorderSide(color: Colors.blue),
                         borderRadius: BorderRadius.circular(26),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
+                        borderSide: const BorderSide(
+                            color: Color.fromRGBO(14, 15, 14, 1)),
                         borderRadius: BorderRadius.circular(26),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(
+                            color: Color.fromRGBO(14, 15, 14, 1)),
+                        borderRadius: BorderRadius.circular(26),
+                      ),
+                      labelStyle: const TextStyle(
+                        color: Color.fromRGBO(153, 159, 155, 1),
                       ),
                     ),
                   ),
                 ),
-                SizedBox(
+                Padding(
+                  padding: const EdgeInsets.only(left: 250),
+                  child: Row(
+                    children: [
+                      Checkbox(
+                        value: isChecked,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            isChecked = value ?? false;
+                          });
+                        },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        checkColor: Colors.white,
+                        activeColor: Colors.blue,
+                        materialTapTargetSize: MaterialTapTargetSize.padded,
+                      ),
+                      const Text(
+                        "자동로그인",
+                        style: TextStyle(
+                            color: Color.fromRGBO(14, 15, 14, 1),
+                            fontFamily: 'SpoqaHanSansNeo-Regular',
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
                   height: 16,
                 ),
                 SizedBox(
                   width: 219,
-                  height: 45,
+                  height: 51,
                   child: ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
@@ -141,7 +188,8 @@ class _LoginPageState extends State<LoginPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        backgroundColor: Color.fromRGBO(100, 215, 251, 1)),
+                        backgroundColor:
+                            const Color.fromRGBO(100, 215, 251, 1)),
                     child: isLoading
                         ? const Center(
                             child: CircularProgressIndicator(
@@ -150,24 +198,36 @@ class _LoginPageState extends State<LoginPage> {
                           )
                         : const Text(
                             "로그인",
-                            style: TextStyle(color: Colors.black),
+                            style: TextStyle(
+                              color: Color.fromRGBO(14, 15, 14, 1),
+                              fontFamily: 'SpoqaHanSansNeo-Medium',
+                              fontSize: 18,
+                            ),
                           ),
                   ),
                 ),
-                SizedBox(
-                  height: 16,
+                const SizedBox(
+                  height: 7,
                 ),
                 SizedBox(
                   width: 219,
-                  height: 45,
+                  height: 51,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
+                      backgroundColor: (const Color.fromRGBO(237, 237, 237, 1)),
                     ),
                     onPressed: widget.onPressed,
-                    child: const Text("회원가입"),
+                    child: const Text(
+                      "회원가입",
+                      style: TextStyle(
+                        color: Color.fromRGBO(14, 15, 14, 1),
+                        fontFamily: 'SpoqaHanSansNeo-Medium',
+                        fontSize: 18,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -198,6 +258,7 @@ class _SignUPState extends State<SignUP> {
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
   final TextEditingController _nicknameController = TextEditingController();
+  String _profileImageUrl = 'public/images/profile.svg'; // Default image URL
 
   createUserWithEmailAndPassword() async {
     try {
@@ -221,6 +282,8 @@ class _SignUPState extends State<SignUP> {
           'userId': user.uid,
           'nickname': _nicknameController.text,
           'createdAt': FieldValue.serverTimestamp(),
+          'email': _email.text,
+          'profile': _profileImageUrl, // Save profile image URL
         });
 
         // 홈 페이지로 이동하면서 닉네임 전달
@@ -248,18 +311,31 @@ class _SignUPState extends State<SignUP> {
     return Scaffold(
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.only(bottom: 150),
           child: Form(
             key: _formKey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: SvgPicture.asset('public/images/logo.svg'),
+                  padding: const EdgeInsets.only(bottom: 53, right: 400),
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back_ios),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginAndSignUp()),
+                      );
+                    },
+                  ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
+                  padding: const EdgeInsets.only(bottom: 28),
+                  child: SvgPicture.asset('public/images/profile.svg'),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 17),
                   child: SizedBox(
                     width: 277,
                     child: TextFormField(
@@ -273,19 +349,28 @@ class _SignUPState extends State<SignUP> {
                       decoration: InputDecoration(
                         labelText: "닉네임",
                         border: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.green),
+                          borderSide: const BorderSide(color: Colors.blue),
                           borderRadius: BorderRadius.circular(26),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.green),
+                          borderSide: const BorderSide(
+                              color: Color.fromRGBO(14, 15, 14, 1)),
                           borderRadius: BorderRadius.circular(26),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: Color.fromRGBO(14, 15, 14, 1)),
+                          borderRadius: BorderRadius.circular(26),
+                        ),
+                        labelStyle: const TextStyle(
+                          color: Color.fromRGBO(153, 159, 155, 1),
                         ),
                       ),
                     ),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
+                  padding: const EdgeInsets.only(bottom: 17),
                   child: SizedBox(
                     width: 277,
                     child: TextFormField(
@@ -299,19 +384,28 @@ class _SignUPState extends State<SignUP> {
                       decoration: InputDecoration(
                         labelText: "이메일",
                         border: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.green),
+                          borderSide: const BorderSide(color: Colors.blue),
                           borderRadius: BorderRadius.circular(26),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.green),
+                          borderSide: const BorderSide(
+                              color: Color.fromRGBO(14, 15, 14, 1)),
                           borderRadius: BorderRadius.circular(26),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: Color.fromRGBO(14, 15, 14, 1)),
+                          borderRadius: BorderRadius.circular(26),
+                        ),
+                        labelStyle: const TextStyle(
+                          color: Color.fromRGBO(153, 159, 155, 1),
                         ),
                       ),
                     ),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
+                  padding: const EdgeInsets.only(bottom: 60),
                   child: SizedBox(
                     width: 277,
                     child: TextFormField(
@@ -325,12 +419,21 @@ class _SignUPState extends State<SignUP> {
                       decoration: InputDecoration(
                         labelText: "비밀번호",
                         border: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.green),
+                          borderSide: const BorderSide(color: Colors.blue),
                           borderRadius: BorderRadius.circular(26),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.green),
+                          borderSide: const BorderSide(
+                              color: Color.fromRGBO(14, 15, 14, 1)),
                           borderRadius: BorderRadius.circular(26),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: Color.fromRGBO(14, 15, 14, 1)),
+                          borderRadius: BorderRadius.circular(26),
+                        ),
+                        labelStyle: const TextStyle(
+                          color: Color.fromRGBO(153, 159, 155, 1),
                         ),
                       ),
                     ),
@@ -344,6 +447,7 @@ class _SignUPState extends State<SignUP> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
+                      backgroundColor: (const Color.fromRGBO(237, 237, 237, 1)),
                     ),
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
@@ -357,7 +461,14 @@ class _SignUPState extends State<SignUP> {
                                 HomePage(nickname: _nicknameController.text)),
                       );
                     },
-                    child: const Text("회원가입"),
+                    child: const Text(
+                      "회원가입",
+                      style: TextStyle(
+                        color: Color.fromRGBO(14, 15, 14, 1),
+                        fontFamily: 'SpoqaHanSansNeo-Medium',
+                        fontSize: 18,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -387,30 +498,56 @@ class HomePage extends StatelessWidget {
           children: [
             Stack(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: SvgPicture.asset('public/images/celeb.svg'),
-                ),
+                SvgPicture.asset('public/images/celeb.svg'),
                 Padding(
                   padding: const EdgeInsets.only(left: 100, top: 70),
                   child: SvgPicture.asset('public/images/char.svg'),
                 ),
               ],
             ),
-            if (user != null) Text(""),
-            Text("$nickname님, 가입이 완료되었어요!"),
-            Text("해핏에 오신걸 환영해요 :->"), // 사용자의 닉네임 표시
-            SizedBox(
-              height: 42,
-              width: 143,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginAndSignUp()),
-                  );
-                },
-                child: const Text("로그인하러가기"),
+            Text(
+              "$nickname님, 가입이 완료되었어요!",
+              style: const TextStyle(
+                color: Color.fromRGBO(14, 15, 14, 1),
+                fontFamily: 'SpoqaHanSansNeo-Medium',
+                fontSize: 18,
+              ),
+            ),
+            const Text(
+              "해핏에 오신걸 환영해요 :->",
+              style: TextStyle(
+                color: Color.fromRGBO(14, 15, 14, 1),
+                fontFamily: 'SpoqaHanSansNeo-Medium',
+                fontSize: 18,
+              ),
+            ), // 사용자의 닉네임 표시
+            Padding(
+              padding: const EdgeInsets.only(top: 84, bottom: 100),
+              child: SizedBox(
+                height: 42,
+                width: 143,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      backgroundColor: const Color.fromRGBO(100, 215, 251, 1)),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginAndSignUp()),
+                    );
+                  },
+                  child: const Text(
+                    "로그인하기",
+                    style: TextStyle(
+                      color: Color.fromRGBO(14, 15, 14, 1),
+                      fontFamily: 'SpoqaHanSansNeo-Medium',
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
               ),
             ),
           ],

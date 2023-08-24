@@ -3,7 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:soda_4th_hapit/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'page/login_signup.dart';
+import 'package:soda_4th_hapit/page/home.dart';
+import 'package:soda_4th_hapit/page/login_signup.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +21,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo', theme: ThemeData(), home: AuthPage());
+        title: 'Flutter Demo', theme: ThemeData(), home: const AuthPage());
+    //homeScreen바꾸고 싶으면 AuthPage 쓰기
   }
 }
 
@@ -64,10 +66,14 @@ class _LoginAndSignUpState extends State<LoginAndSignUp> {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      home: HomeScreen(),
-    );
+    if (islogin) {
+      return LoginPage(
+        onPressed: togglePage,
+      );
+    } else {
+      return SignUP(
+        onPressed: togglePage,
+      );
+    }
   }
 }

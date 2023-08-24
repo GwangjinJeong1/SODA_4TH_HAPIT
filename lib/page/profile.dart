@@ -5,7 +5,7 @@ import '../components/textStyle.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'editProfile.dart';
-import 'package:soda_4th_hapit/main.dart';
+import '../main.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});

@@ -89,8 +89,6 @@ class _FriendPageState extends State<FriendPage> {
             return const Center(child: Text('Error'));
           }
 
-          final List<String> roomsWithUser = snapshot.data ?? [];
-
           return FutureBuilder<QuerySnapshot>(
             future: _firestore.collection('rooms').get(),
             builder: (context, snapshot) {

@@ -37,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
       // 로그인 성공 시에 SignPage로 이동
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (context) => const HomePage()),
       );
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -226,7 +226,8 @@ class _SignUPState extends State<SignUP> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => HomePage(nickname: _nicknameController.text),
+            builder: (context) =>
+                WelcomePage(nickname: _nicknameController.text),
           ),
         );
       }
@@ -351,8 +352,8 @@ class _SignUPState extends State<SignUP> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                HomePage(nickname: _nicknameController.text)),
+                            builder: (context) => WelcomePage(
+                                nickname: _nicknameController.text)),
                       );
                     },
                     child: const Text("회원가입"),
@@ -369,10 +370,10 @@ class _SignUPState extends State<SignUP> {
 
 //--------------------회원가입 이후
 
-class HomePage extends StatelessWidget {
+class WelcomePage extends StatelessWidget {
   final String nickname;
 
-  const HomePage({super.key, required this.nickname});
+  const WelcomePage({super.key, required this.nickname});
 
   @override
   Widget build(BuildContext context) {

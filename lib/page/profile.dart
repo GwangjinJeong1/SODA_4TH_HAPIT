@@ -11,9 +11,11 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final int _selectedIndex = 2;
+  late String nickname = "";
+  late String email = "";
   void _onItemTapped(int index) {
     if (_selectedIndex != index) {
-      Navigator.pushNamed(context, _routeNames[index]);
+      Navigator.of(context, rootNavigator: true).pushNamed(_routeNames[index]);
     }
   }
 
@@ -25,7 +27,21 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const Center(child: Text('Profile Page')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              '프로필 정보',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            // Image.network(widget.user!.data()!['profile']),
+            Text('닉네임: $nickname'),
+            Text('이메일: $email'),
+          ],
+        ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(

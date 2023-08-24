@@ -23,15 +23,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        initialRoute: '/home',
+        initialRoute: '/login',
         routes: {
-          '/home': (context) => const HomeScreen(),
+          '/home': (context) => const HomePage(),
           '/friend': (context) => const FriendPage(),
           '/profile': (context) => const ProfilePage(),
+          '/login': (context) => const AuthPage(),
         },
         title: 'Flutter Demo',
         theme: ThemeData(),
-        home: const AuthPage());
+        home: const HomePage());
   }
 }
 
@@ -47,11 +48,7 @@ class AuthPage extends StatelessWidget {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
               } else {
-                if (snapshot.hasData) {
-                  return const LoginAndSignUp();
-                } else {
-                  return const LoginAndSignUp();
-                }
+                return const LoginAndSignUp();
               }
             }));
   }
@@ -78,7 +75,7 @@ class _LoginAndSignUpState extends State<LoginAndSignUp> {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      home: HomeScreen(),
+      home: HomePage(),
     );
   }
 }

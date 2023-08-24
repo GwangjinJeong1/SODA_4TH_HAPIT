@@ -6,18 +6,18 @@ import '../components/colors.dart';
 import 'tasks.dart';
 import '../components/textStyle.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomePageState extends State<HomePage> {
   final int _selectedIndex = 1;
   void _onItemTapped(int index) {
     if (_selectedIndex != index) {
-      Navigator.pushNamed(context, _routeNames[index]);
+      Navigator.of(context, rootNavigator: true).pushNamed(_routeNames[index]);
     }
   }
 

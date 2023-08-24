@@ -13,7 +13,7 @@ class _FriendPageState extends State<FriendPage> {
   final int _selectedIndex = 0;
   void _onItemTapped(int index) {
     if (_selectedIndex != index) {
-      Navigator.pushNamed(context, _routeNames[index]);
+      Navigator.of(context, rootNavigator: true).pushNamed(_routeNames[index]);
     }
   }
 

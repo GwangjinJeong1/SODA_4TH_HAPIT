@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:soda_4th_hapit/main.dart';
+import '../main.dart';
 import '../components/colors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -95,11 +95,11 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             Row(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 20),
+                const Padding(
+                  padding: EdgeInsets.only(right: 20),
                   child: Text('닉네임'),
                 ),
-                Text('$nickname'),
+                Text(nickname),
               ],
             ),
             const Divider(
@@ -109,11 +109,11 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             Row(
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 20),
                   child: Text('이메일'),
                 ),
-                Text('$email'),
+                Text(email),
                 SizedBox(
                   width: 100,
                   height: 34,

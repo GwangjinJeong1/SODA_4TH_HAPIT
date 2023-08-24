@@ -59,15 +59,15 @@ class _UpdateHabitState extends State<UpdateHabit> {
                     icon: SvgPicture.asset('public/images/trashcan.svg'),
                     itemBuilder: (BuildContext context) {
                       return [
-                        PopupMenuItem<String>(
+                        const PopupMenuItem<String>(
                           value: '오늘',
                           child: Text('오늘'),
                         ),
-                        PopupMenuItem<String>(
+                        const PopupMenuItem<String>(
                           value: '이번 주',
                           child: Text('이번 주'),
                         ),
-                        PopupMenuItem<String>(
+                        const PopupMenuItem<String>(
                           value: '향후',
                           child: Text('향후'),
                         ),

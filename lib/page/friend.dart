@@ -124,8 +124,8 @@ class _CreateRoomState extends State<CreateRoom> {
                           width: 1.5, color: Color.fromRGBO(14, 15, 14, 1)),
                     ),
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: const BorderSide(
-                          color: Color.fromRGBO(14, 15, 14, 1)),
+                      borderSide:
+                          BorderSide(color: Color.fromRGBO(14, 15, 14, 1)),
                     ),
                   ),
                 ),

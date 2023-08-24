@@ -382,7 +382,7 @@ class AddListButton extends StatelessWidget {
                     isScrollControlled: true,
                     context: context,
                     builder: (BuildContext context) {
-                      return SizedBox(
+                      return const SizedBox(
                         height: 500, // 계산한 높이를 설정
                         child: WithFriend(), // 또는 다른 원하는 위젯을 여기에 배치
                       );

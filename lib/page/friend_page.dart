@@ -4,7 +4,7 @@ import '../components/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../page/friend_part.dart';
-import '../components/textStyle.dart';
+import '../components/text_style.dart';
 
 class FriendPage extends StatefulWidget {
   const FriendPage({super.key});
@@ -174,7 +174,7 @@ class _FriendPageState extends State<FriendPage> {
                                           child: Text(purpose,
                                               style: AppTextStyle.body2),
                                         ),
-                                        Icon(Icons
+                                        const Icon(Icons
                                             .arrow_forward_ios), // Add an arrow icon
                                       ],
                                     ),

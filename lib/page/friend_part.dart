@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../components/colors.dart';
-import '../components/textStyle.dart';
+import '../components/text_style.dart';
 
 class RoomPage extends StatefulWidget {
   final int roomNumber;
@@ -50,7 +50,7 @@ class _RoomPageState extends State<RoomPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios),
+          icon: const Icon(Icons.arrow_back_ios),
           color: Colors.black,
           onPressed: () {
             Navigator.pop(context);
@@ -205,7 +205,7 @@ class _RoomPageState extends State<RoomPage> {
                                   const SizedBox(height: 13),
                                   if (participant ==
                                       participants[0]) // 첫 번째 인덱스인 경우 "방장" 표시
-                                    Text(
+                                    const Text(
                                       '방장',
                                       style: TextStyle(
                                         color: Color.fromRGBO(153, 159, 155, 1),

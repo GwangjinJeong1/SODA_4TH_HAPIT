@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../components/textStyle.dart';
+import '../components/text_style.dart';
 import '../crud/add_habit.dart';
 import '../crud/update_habit.dart';
 import '../components/colors.dart';
@@ -107,7 +107,10 @@ class _TasksState extends State<Tasks> {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text('습관목록', style: AppTextStyle.head3),
+              Padding(
+                padding: const EdgeInsets.only(left: 5.3),
+                child: Text('습관목록', style: AppTextStyle.head3),
+              ),
             ],
           ),
           const SizedBox(height: 10),
@@ -177,17 +180,11 @@ class _TasksState extends State<Tasks> {
                                     ? AppColors.aloneOn
                                     : AppColors.aloneOff),
                             boxShadow: [
-                              data['isDone']
-                                  ? BoxShadow(
-                                      color: Colors.black.withOpacity(0.25),
-                                      blurRadius: 4.0,
-                                      offset: const Offset(0, 4),
-                                    )
-                                  : BoxShadow(
-                                      color: Colors.black.withOpacity(0.15),
-                                      blurRadius: 4.0,
-                                      offset: const Offset(0, 1),
-                                    ),
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.15),
+                                blurRadius: 4.0,
+                                offset: const Offset(0, 1),
+                              ),
                             ],
                           ),
                           child: Center(
@@ -418,21 +415,9 @@ class AddListButton extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
+          SizedBox(
             width: 160,
             height: 70,
-            decoration: BoxDecoration(boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.20),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
-              ),
-              BoxShadow(
-                color: Colors.black.withOpacity(0.15),
-                blurRadius: 4,
-                offset: const Offset(0, 1),
-              ),
-            ]),
             child: ElevatedButton(
                 onPressed: () {
                   showModalBottomSheet<void>(
@@ -449,6 +434,7 @@ class AddListButton extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.fromLTRB(10, 17, 9, 15),
                   backgroundColor: AppColors.friendPlus,
+                  elevation: 7,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),
@@ -475,21 +461,9 @@ class AddListButton extends StatelessWidget {
                 )),
           ),
           const SizedBox(width: 11),
-          Container(
+          SizedBox(
             width: 160,
             height: 70,
-            decoration: BoxDecoration(boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.20),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
-              ),
-              BoxShadow(
-                color: Colors.black.withOpacity(0.15),
-                blurRadius: 4,
-                offset: const Offset(0, 1),
-              ),
-            ]),
             child: ElevatedButton(
                 onPressed: () async {
                   await Future.delayed(const Duration(seconds: 0));
@@ -509,6 +483,7 @@ class AddListButton extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.fromLTRB(19, 17, 34, 15),
                   backgroundColor: AppColors.alonePlus,
+                  elevation: 7,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../components/colors.dart';
-import '../components/textStyle.dart';
+import '../components/text_style.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 

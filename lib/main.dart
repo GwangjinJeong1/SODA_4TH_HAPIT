@@ -4,7 +4,7 @@ import 'package:soda_4th_hapit/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'page/home.dart';
-import 'page/friendPage.dart';
+import 'page/friend_page.dart';
 import 'page/profile.dart';
 import 'package:soda_4th_hapit/page/login_signup.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../components/colors.dart';
-import '../components/textStyle.dart';
+import '../components/text_style.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -107,9 +107,28 @@ class _EditProfilePageState extends State<EditProfilePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const SizedBox(height: 30),
-            Image.asset(_isGreen
-                ? 'public/images/character2.png'
-                : 'public/images/character1.png'),
+            _isGreen
+                ? Center(
+                    child: Container(
+                    width: 82,
+                    height: 82,
+                    decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                            image: AssetImage('public/images/character2.png'))),
+                  ))
+                : Center(
+                    child: Container(
+                    width: 82,
+                    height: 82,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          width: 2,
+                        ),
+                        image: const DecorationImage(
+                            image: AssetImage('public/images/character1.png'))),
+                  )),
             const SizedBox(height: 12),
             TextButton(
                 onPressed: () {

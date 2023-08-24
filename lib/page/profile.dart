@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../components/colors.dart';
-import '../components/textStyle.dart';
+import '../components/text_style.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'editProfile.dart';
-import '../main.dart';
+import 'edit_profile.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -56,11 +55,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  void _onLogoutPressed() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => AuthPage()));
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,7 +99,18 @@ class _ProfilePageState extends State<ProfilePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const SizedBox(height: 30),
-            SvgPicture.asset('public/images/profile.svg'),
+            Center(
+                child: Container(
+              width: 82,
+              height: 82,
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    width: 2,
+                  ),
+                  image: const DecorationImage(
+                      image: AssetImage('public/images/character1.png'))),
+            )),
             const SizedBox(height: 54),
             const Divider(
               indent: 20,

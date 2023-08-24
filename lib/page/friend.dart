@@ -6,7 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import './calendar.dart';
 import './friend_part.dart';
-import '../components/textStyle.dart';
+import '../components/text_style.dart';
 import '../components/colors.dart';
 
 class WithFriend extends StatelessWidget {
@@ -239,7 +239,7 @@ class _CreateRoomState extends State<CreateRoom> {
                         const Duration(seconds: 0),
                         () => showModalBottomSheet(
                               context: context,
-                              builder: (context) => WithFriend(),
+                              builder: (context) => const WithFriend(),
                             ));
                   },
                   style: ElevatedButton.styleFrom(

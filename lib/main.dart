@@ -3,9 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:soda_4th_hapit/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:soda_4th_hapit/page/home.dart';
-import 'package:soda_4th_hapit/page/login_signup.dart';
-import 'package:soda_4th_hapit/page/tasks.dart';
+import 'page/home.dart';
 import 'page/friendPage.dart';
 import 'page/profile.dart';
 
@@ -26,13 +24,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         routes: {
+          '/home': (context) => const HomePage(),
           '/friend': (context) => const FriendPage(),
-          '/home': (context) => const HomeScreen(),
           '/profile': (context) => const ProfilePage(),
+          '/login': (context) => const AuthPage(),
         },
         title: 'Flutter Demo',
         theme: ThemeData(),
-        home: const AuthPage());
+        home: const HomePage());
   }
 }
 
@@ -48,11 +47,7 @@ class AuthPage extends StatelessWidget {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
               } else {
-                if (snapshot.hasData) {
-                  return const LoginAndSignUp();
-                } else {
-                  return const LoginAndSignUp();
-                }
+                return const LoginAndSignUp();
               }
             }));
   }
@@ -76,14 +71,10 @@ class _LoginAndSignUpState extends State<LoginAndSignUp> {
 
   @override
   Widget build(BuildContext context) {
-    if (islogin) {
-      return LoginPage(
-        onPressed: togglePage,
-      );
-    } else {
-      return SignUP(
-        onPressed: togglePage,
-      );
-    }
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Flutter Demo',
+      home: HomePage(),
+    );
   }
 }

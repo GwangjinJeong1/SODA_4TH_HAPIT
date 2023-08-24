@@ -19,7 +19,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void _onItemTapped(int index) {
     if (_selectedIndex != index) {
-      Navigator.pushNamed(context, _routeNames[index]);
+      Navigator.of(context, rootNavigator: true).pushNamed(_routeNames[index]);
     }
   }
 

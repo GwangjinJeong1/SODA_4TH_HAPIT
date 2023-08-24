@@ -368,12 +368,12 @@ class AddListButton extends StatelessWidget {
               BoxShadow(
                 color: Colors.black.withOpacity(0.20),
                 blurRadius: 6,
-                offset: Offset(0, 2),
+                offset: const Offset(0, 2),
               ),
               BoxShadow(
                 color: Colors.black.withOpacity(0.15),
                 blurRadius: 4,
-                offset: Offset(0, 1),
+                offset: const Offset(0, 1),
               ),
             ]),
             child: ElevatedButton(
@@ -382,7 +382,7 @@ class AddListButton extends StatelessWidget {
                     isScrollControlled: true,
                     context: context,
                     builder: (BuildContext context) {
-                      return SizedBox(
+                      return const SizedBox(
                         height: 500, // 계산한 높이를 설정
                         child: WithFriend(), // 또는 다른 원하는 위젯을 여기에 배치
                       );
@@ -425,12 +425,12 @@ class AddListButton extends StatelessWidget {
               BoxShadow(
                 color: Colors.black.withOpacity(0.20),
                 blurRadius: 6,
-                offset: Offset(0, 2),
+                offset: const Offset(0, 2),
               ),
               BoxShadow(
                 color: Colors.black.withOpacity(0.15),
                 blurRadius: 4,
-                offset: Offset(0, 1),
+                offset: const Offset(0, 1),
               ),
             ]),
             child: ElevatedButton(
